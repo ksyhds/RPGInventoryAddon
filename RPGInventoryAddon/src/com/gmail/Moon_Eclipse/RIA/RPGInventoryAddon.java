@@ -19,6 +19,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		 * InventoryCloseEvent			- 장비 설정을 끝내고 장비창을 닫는 경우
 		 * PlayerItemHeldEvent			- 마우스 스크롤을 돌리거나 아이템을 주워서 아이템을 손에 든 경우
 		 * 
+		 * 
 		*/
 
 		// 서버에 커스텀 이벤트를 등록함.
