@@ -1,0 +1,7 @@
+name: RPGInventoryAddon
+main: com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon
+version: 1.0[18.07.30]
+author: Moon_Eclipse
+commands:
+  RIA:
+    description: /RIA
