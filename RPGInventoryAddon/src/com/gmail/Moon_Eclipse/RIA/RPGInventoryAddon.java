@@ -1,16 +1,20 @@
 package com.gmail.Moon_Eclipse.RIA;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
+import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAUtil;
 import com.gmail.Moon_Eclipse.RIA.commands.Commands;
 import com.gmail.Moon_Eclipse.RIA.event.*;
 
 
 public class RPGInventoryAddon extends JavaPlugin
 {
+	Configuration c;
+	
 	public void onEnable()
 	{
 		/*
@@ -32,13 +36,32 @@ public class RPGInventoryAddon extends JavaPlugin
 		// 커맨드 클래스를 설정
 		getCommand("RIA").setExecutor(new Commands(this));
 		
+		//서버를 켜면서 config설정을 저장
+		ReloadConfig();
+		
+		
 		
 	}
 	public void onDisable(){}
 
+	//이벤트 추가 메소드
 	public void AddEvent(Listener Event)
 	{
+		// 이벤트 추가
 		Bukkit.getPluginManager().registerEvents(Event, this);
+	}
+	
+	// 리로드 시에 사용될 메소드
+	public void ReloadConfig()
+	{
+		// config 데이터를 불러옴.
+		c = this.getConfig();
+		
+		// config 파일에 명시된 능력치 이름을 받아와 저장
+		RIAUtil.Attribute_Names = c.getStringList("config.AttriuteList");
+		
+		// util의 능력치 맵을 초기화
+		RIAUtil.ResetAttributeMap();
 	}
 }
 
