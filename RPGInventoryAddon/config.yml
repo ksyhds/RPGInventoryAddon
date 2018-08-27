@@ -1,1 +1,10 @@
 config:
+  AttriuteList:
+    - ""
+  Lore_Identifier: "*"
+  Total_Skill_Damage_Name: "최종 스킬 공격력"
+
+  # 아래 값은 %로 처리 됩니다. 기본값: 100% , 단 %는 빼고 표기해 주세요
+  Default_Walk_Speed: 150
+
+  Default_Health_Point: 10

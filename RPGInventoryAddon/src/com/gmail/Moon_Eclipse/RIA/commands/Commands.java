@@ -57,9 +57,6 @@ public class Commands implements CommandExecutor
 					// 패시브 아이템의 이름을 플레이어에게 출력
 					player.sendMessage("Passive Item: " + i.getItemMeta().getDisplayName());
 				}
-				
-				
-				
 			}
 		}
 		return true;

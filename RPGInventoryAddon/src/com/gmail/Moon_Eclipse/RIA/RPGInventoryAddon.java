@@ -22,7 +22,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		 * EntityDamageByEntityEvent 	- 데미지를 입히거나 받는 경우
 		 * InventoryCloseEvent			- 장비 설정을 끝내고 장비창을 닫는 경우
 		 * PlayerItemHeldEvent			- 마우스 스크롤을 돌리거나 아이템을 주워서 아이템을 손에 든 경우
-		 * 
+		 * PlayerJoinEvent				- 플레이어가 서버에 접속한 경우
 		 * 
 		*/
 
@@ -62,6 +62,18 @@ public class RPGInventoryAddon extends JavaPlugin
 		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
+		
+		// config 파일에 명시된 총 스킬 공격력 이름을 받아와 저장
+		RIAUtil.Total_Skill_Damage_Name  = c.getString("config.Total_Skill_Damage_Name");
+		
+		// config 파일에 명시된 스탯 식별자를 받아와 저장
+		RIAUtil.Attribute_Lore_Identifier = c.getString("config.Lore_Identifier");
+		
+		// config 파일에 명시된 기본 이동 속도를 받아와 저장
+		RIAUtil.Default_Walk_Speed = c.getInt("config.Default_Walk_Speed") * 1.0f;
+		
+		// config 파일에 명시된 기본 체력을 받아와 저장
+		RIAUtil.Default_Health_Point = c.getInt("config.Default_Health_Point") * 1.0d;
 	}
 }
 
