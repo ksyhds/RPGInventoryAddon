@@ -27,7 +27,7 @@ public class RIAUtil
 	
 	public static Map<String, Float> AttributeMap = new HashMap<String, Float>();
 
-	
+	static WrapperManager wm = new WrapperManager();
 
 	public static void ResetAttributeMap()
 	{
@@ -63,7 +63,39 @@ public class RIAUtil
 		
 		return args;
 	}
-	
+	public static void SetPlayerDataAndStat(Player player) 
+	{
+		// RIA 플레이어를 받아와 저장
+		RIAPlayer rp = wm.getRIAPlayer(player);
+
+		// RPG 인벤토리일 경우 플레이어의 RPG 인벤토리 장비들을 받아옴
+		List<ItemStack> Armors = RIAUtil.getPlayerArmor(player);
+		
+		// 장비가 하나도 없지 않다면
+		if(!Armors.isEmpty())
+		{
+			// 인벤토리의 장비목록을 통해 능력치 정보를 모은 맵을 얻어옴
+			Map<String,Float> AttributeMap = RIAUtil.ArmorDamataExtractor(Armors);
+			
+			// 손에 든 아이템의 최종 스킬 공격력을 바꾸기 위해 타겟이 될 아이템을 가져옴
+			ItemStack HandItem = player.getEquipment().getItemInMainHand();
+
+			// 타겟 아이템의 정보를 기반으로 최종 스킬 공격력을 수정한 같은 아이템을 만듦
+			ItemStack new_HandItem = RIAUtil.DamageDataFixer(HandItem, AttributeMap);
+			
+			// 방어구의 스탯 정보를 갖고 있는 맵을 해당 플레이어 객체에 저장해둠. 차후에 데미지 연산 등에 쓰임.
+			rp.setAttributeMap(AttributeMap);
+
+			// 플레이어의 손에 있는 아이템을 새로운 결과 아이템으로 변경함.
+			player.getEquipment().setItemInMainHand(new_HandItem);
+		}
+		
+		// 플레이어의 이동 속도 설정
+		rp.setMoveSpeedByAttributeMap();
+		
+		// 플레이어의 체력 설정
+		rp.setHitPointByAttributeMap();
+	}
 	// 손에 든 장비를 수정하는 장비 정보 수정자.
 	public static ItemStack DamageDataFixer(ItemStack item, Map<String, Float> map)
 	{

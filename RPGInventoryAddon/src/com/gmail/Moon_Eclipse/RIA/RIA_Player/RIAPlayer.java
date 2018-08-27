@@ -3,6 +3,8 @@ package com.gmail.Moon_Eclipse.RIA.RIA_Player;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
 public class RIAPlayer 
@@ -50,10 +52,13 @@ public class RIAPlayer
 		// 맵에 저장되어 있는 생명력을 얻어옴
 		double HP = AttributeMap.get("생명력");
 		
-		// 맵의 생명력과 기본 생명력을 더해서 최대 체력을 지정함
-		MineCraftPlayer.setMaxHealth(RIAUtil.Default_Health_Point + HP);
+		// 맵의 생명력과 기본 생명력을 더해서 최대 체력을 지정함, setMaxHealth를 대신할Attribute를 처음 사용 
+		AttributeInstance healthAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+		healthAttribute.setBaseValue(RIAUtil.Default_Health_Point + HP);
 		
 		// 최대 체력으로 체력을 회복시킴
-		MineCraftPlayer.setHealth(MineCraftPlayer.getMaxHealth());
+		MineCraftPlayer.setHealth(healthAttribute.getBaseValue());	
+		
+		AttributeInstance healthAttribute2 = MineCraftPlayer.getAttribute(Attribute.HORSE_JUMP_STRENGTH);
 	}
 }
