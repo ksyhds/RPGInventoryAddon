@@ -120,25 +120,33 @@ public class RIAUtil
 				// 로어를 1개씩 돌려가며 하위 구문 실행
 				for(String lore : Lores)
 				{
-					//로어의 모든 색 코드를 제거
-					lore = ChatColor.stripColor(lore);
-					
-					// 구분자를 통해 로어에서 스탯 이름을 얻어옴 (아마도 "최종 스킬 공격력")
-					String Attribute_name = Splitter(lore)[0];
-					
-					// 만약 로어의 이름과 목표하는 이름이 같다면
-					if(Attribute_name.equals(Total_Skill_Damage_Name))
+					//로어가 처리 대상인지 아닌지 판별
+					if(lore.contains(":")) 
 					{
-						//"* &e최종 스킬 공격력: &d@.0"
+						//로어의 모든 색 코드를 제거
+						lore = ChatColor.stripColor(lore);
 						
-						// 유저의 맵에서 스킬 공격력에 대한 값을 가져옴
-						float att_value = map.get(Attribute_name.replaceAll("최종 ", ""));
+						// 구분자를 통해 로어에서 스탯 이름을 얻어옴 (아마도 "최종 스킬 공격력")
+						String Attribute_name = Splitter(lore)[0];
 						
-						// 새로운 최종 스킬 공격력 로어를 설정. 자리수를 설정한 float 값을 적용
-						String new_att = "§f" + Attribute_Lore_Identifier + " §e" + Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
-						
-						// 새로운 로어에 새로 만든 최종 스킬 공격력을 추가
-						New_Lore.add(new_att);
+						// 만약 로어의 이름과 목표하는 이름이 같다면
+						if(Attribute_name.equals(Total_Skill_Damage_Name))
+						{
+							//"* &e최종 스킬 공격력: &d@.0"
+							
+							// 유저의 맵에서 스킬 공격력에 대한 값을 가져옴
+							float att_value = map.get(Attribute_name.replaceAll("최종 ", ""));
+							
+							// 새로운 최종 스킬 공격력 로어를 설정. 자리수를 설정한 float 값을 적용
+							String new_att = "§f" + Attribute_Lore_Identifier + " §e" + Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
+							
+							// 새로운 로어에 새로 만든 최종 스킬 공격력을 추가
+							New_Lore.add(new_att);
+						}
+						else
+						{
+							New_Lore.add(lore);
+						}
 					}
 					else
 					{
