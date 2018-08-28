@@ -4,7 +4,6 @@ import java.util.List;
 
 public class RIAStats 
 {
-	
 	public static double Default_Health_Point = 0d;
 	
 	public static float Default_Walk_Speed = 0f;
@@ -29,4 +28,9 @@ public class RIAStats
 	
 	public static String Critical_Probability_Name = "";
 	
+	public static String Defence_Damage_Name = "";
+	
+	public static String Reduce_Damage_Name = "";
+	
+	public static String Absorption_Health_Name = "";
 }

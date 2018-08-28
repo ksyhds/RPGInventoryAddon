@@ -30,6 +30,9 @@ public class RIAUtil
 
 	public static void ResetAttributeMap()
 	{
+		// 저장 공간을 모든 유저가 공유하는것을 방지하기위해 매 초기화마다 새로운 공간을 생성해 할당함.
+		AttributeMap = new HashMap<String, Float>();
+		
 		for(String string : RIAStats.Attribute_Names)
 		{
 			AttributeMap.put(string,0f);

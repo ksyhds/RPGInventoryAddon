@@ -2,6 +2,7 @@ package com.gmail.Moon_Eclipse.RIA.Util;
 
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,7 +17,7 @@ public class Damage_Caculator
 	
 	// RIA 플레이어 매니저 인스턴스를 생성
 	static WrapperManager wm = new WrapperManager();
-
+/*
 	// 맵의 키로서 사용할 각 스탯의 이름을 얻어옴
 	// 기본 데미지. offset으로써 활용됨
 	static String Base_Attack_Damage_Name = RIAStats.Base_Attack_Damage_Name;
@@ -32,7 +33,7 @@ public class Damage_Caculator
 			
 	// 치명타 피해. % 계산이 진행되야 함.
 	static String Critical_Probability_Name = RIAStats.Critical_Probability_Name;
-	
+	*/
 	public static double Damage_Calculate(double Event_Damage, Entity damager, Entity target) 
 	{
 		
@@ -43,11 +44,11 @@ public class Damage_Caculator
 		RIADebugger.initialize_MessageStack();
 		
 		//config 항목을 확인하기위해 각종 스탯을 메모
-		RIADebugger.AddMessage_to_MessageStack("Base_Attack_Damage_Name: "+ Base_Attack_Damage_Name);
-		RIADebugger.AddMessage_to_MessageStack("Normal_Attack_Damage_Name: " + Normal_Attack_Damage_Name);
-		RIADebugger.AddMessage_to_MessageStack("Skill_Attack_Damage_Name: " + Skill_Attack_Damage_Name);
-		RIADebugger.AddMessage_to_MessageStack("Critical_Attack_Damage_Name: " + Critical_Attack_Damage_Name);
-		RIADebugger.AddMessage_to_MessageStack("Critical_Probability_Name: " + Critical_Probability_Name);
+		RIADebugger.AddMessage_to_MessageStack("Base_Attack_Damage_Name: "+ RIAStats.Base_Attack_Damage_Name);
+		RIADebugger.AddMessage_to_MessageStack("Normal_Attack_Damage_Name: " + RIAStats.Normal_Attack_Damage_Name);
+		RIADebugger.AddMessage_to_MessageStack("Skill_Attack_Damage_Name: " + RIAStats.Skill_Attack_Damage_Name);
+		RIADebugger.AddMessage_to_MessageStack("Critical_Attack_Damage_Name: " + RIAStats.Critical_Attack_Damage_Name);
+		RIADebugger.AddMessage_to_MessageStack("Critical_Probability_Name: " + RIAStats.Critical_Probability_Name);
 		
 		
 		// 데미지 기록
@@ -93,16 +94,16 @@ public class Damage_Caculator
 	//--------------------데미지 증가 파트--------------------
 			
 			// 공격자의 기본 데미지 스탯을 얻어옴
-			double Damager_Base_Damage = RIA_Damager_Stat_map.get(Base_Attack_Damage_Name);
+			double Damager_Base_Damage = RIA_Damager_Stat_map.get(RIAStats.Base_Attack_Damage_Name);
 			
 			// 공격자의 일반 데미지 스탯을 얻어옴
-			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(Normal_Attack_Damage_Name);
+			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(RIAStats.Normal_Attack_Damage_Name);
 			
 			// 공격자의 크리티컬 성공 확률을 얻어옴
-			double Critical_Probability = RIA_Damager_Stat_map.get(Critical_Probability_Name);
+			double Critical_Probability = RIA_Damager_Stat_map.get(RIAStats.Critical_Probability_Name);
 					
 			// 공격자의 크리티컬 데미지 퍼센트를 얻어옴. 몇%를 원래 데미지에 더하는 연산에 사용
-			double Critical_Damage = RIA_Damager_Stat_map.get(Critical_Attack_Damage_Name);	
+			double Critical_Damage = RIA_Damager_Stat_map.get(RIAStats.Critical_Attack_Damage_Name);	
 			
 			// 공격자의 크리티컬이 성공하는지 아닌지 계산
 			boolean Can_Critical = RIAUtil.CanPlayerActivateCriticalDamage(Critical_Probability);
@@ -116,12 +117,31 @@ public class Damage_Caculator
 			if(Can_Critical) 
 			{
 				// 크리티컬 데미지의 퍼센트 만큼의 추가 공격력을 얻게 되므로 최종 공격력 + (최종공격력 * @/100)
-				double temp_damage = New_Damage * (Critical_Damage/100);
-				New_Damage = New_Damage + temp_damage;
+				New_Damage = getPercentedDamage_Plus(New_Damage, Critical_Damage);
 			}
 			
 	//--------------------데미지 감소 파트--------------------
+			
+			// 피격자의 피해 감소량을 얻어옴. %적용이 필요함.
+			double Target_Defence_Damage = RIA_Target_Stat_map.get(RIAStats.Defence_Damage_Name);
+			
+			// 피격자의 피해 무시량을 얻어옴. 정수 연산
+			double Target_Reduce_Damage = RIA_Target_Stat_map.get(RIAStats.Reduce_Damage_Name);
+			
+			// %만큼 감소한 데미지가 적용된 데미지값을 변수에 저장
+			New_Damage = getPercentedDamage_Minus(New_Damage, Target_Defence_Damage);
+			
+			// 지정된 값만큼 데미지를 감소시킴
+			New_Damage -= Target_Reduce_Damage;
+			
 	//--------------------데미지 기타 파트--------------------
+			
+			// 공격자의 생명력 흡수량을 얻어옴.
+			double Damager_Absorption_Health = RIA_Damager_Stat_map.get(RIAStats.Absorption_Health_Name);
+			
+			// 생명력 흡수를 플레이어에게 적용함.
+			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
+			
 	//--------------------데미지 설정 파트--------------------
 			
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
@@ -147,16 +167,16 @@ public class Damage_Caculator
 	//--------------------데미지 증가 파트--------------------
 			
 			// 공격자의 기본 데미지 스탯을 얻어옴
-			double Damager_Base_Damage = RIA_Damager_Stat_map.get(Base_Attack_Damage_Name);
+			double Damager_Base_Damage = RIA_Damager_Stat_map.get(RIAStats.Base_Attack_Damage_Name);
 			
 			// 공격자의 일반 데미지 스탯을 얻어옴
-			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(Normal_Attack_Damage_Name);
+			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(RIAStats.Normal_Attack_Damage_Name);
 			
 			// 공격자의 크리티컬 성공 확률을 얻어옴
-			double Critical_Probability = RIA_Damager_Stat_map.get(Critical_Probability_Name);
+			double Critical_Probability = RIA_Damager_Stat_map.get(RIAStats.Critical_Probability_Name);
 					
 			// 공격자의 크리티컬 데미지 퍼센트를 얻어옴. 몇%를 원래 데미지에 더하는 연산에 사용
-			double Critical_Damage = RIA_Damager_Stat_map.get(Critical_Attack_Damage_Name);	
+			double Critical_Damage = RIA_Damager_Stat_map.get(RIAStats.Critical_Attack_Damage_Name);	
 			
 			// 공격자의 크리티컬이 성공하는지 아닌지 계산
 			boolean Can_Critical = RIAUtil.CanPlayerActivateCriticalDamage(Critical_Probability);
@@ -175,6 +195,13 @@ public class Damage_Caculator
 			
 	//--------------------데미지 감소 파트--------------------
 	//--------------------데미지 기타 파트--------------------
+			
+			// 공격자의 생명력 흡수량을 얻어옴.
+			double Damager_Absorption_Health = RIA_Damager_Stat_map.get(RIAStats.Absorption_Health_Name);
+			
+			// 생명력 흡수를 플레이어에게 적용함.
+			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
+			
 	//--------------------데미지 설정 파트--------------------
 	
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
@@ -199,6 +226,17 @@ public class Damage_Caculator
 			
 	//--------------------데미지 증가 파트--------------------
 	//--------------------데미지 감소 파트--------------------
+			// 피격자의 피해 감소량을 얻어옴. %적용이 필요함.
+			double Target_Defence_Damage = RIA_Target_Stat_map.get(RIAStats.Defence_Damage_Name);
+			
+			// 피격자의 피해 무시량을 얻어옴. 정수 연산
+			double Target_Reduce_Damage = RIA_Target_Stat_map.get(RIAStats.Reduce_Damage_Name);
+			
+			// %만큼 감소한 데미지가 적용된 데미지값을 변수에 저장
+			New_Damage = getPercentedDamage_Minus(New_Damage, Target_Defence_Damage);
+			
+			// 지정된 값만큼 데미지를 감소시킴
+			New_Damage -= Target_Reduce_Damage;
 	//--------------------데미지 기타 파트--------------------
 	//--------------------데미지 설정 파트--------------------
 	
@@ -212,5 +250,45 @@ public class Damage_Caculator
 		RIADebugger.SendErrorMessage_OperatorAndConsole("RIA: 이 오류는 공격자와 피격자가 명확히 구분되지 못했을때 나타납니다.");
 		RIADebugger.SendStackedDebugMessage_Console();
 		return 0d;
+	}
+	public static double getPercentedDamage_Plus(double Damage, double per) 
+	{
+		double temp_damage = Damage * (per/100);
+		return Damage + temp_damage;
+	}
+	public static double getPercentedDamage_Minus(double Damage, double per) 
+	{
+		double temp_damage = Damage * (per/100);
+		return Damage - temp_damage;
+	}
+	public static void BloodSuck(RIAPlayer RIAplayer, double per, double damage)
+	{
+		//if(Debug) Bukkit.broadcastMessage("--------흡혈 메소드에서 넘겨받은 데미지: " + damage + "------");
+		
+		double health = RIAplayer.getPlayerHealth();
+		//if(Debug) Bukkit.broadcastMessage("플레이어의 현재 체력: " + health);
+		
+		double SuckValue = per;
+		//if(Debug) Bukkit.broadcastMessage("흡혈할 정도: " + SuckValue + "%");
+		
+		double UpHealth = (damage/100) * SuckValue;
+		//if(Debug) Bukkit.broadcastMessage("흡혈체력의 양: " + UpHealth);
+		
+		double Maxhealth = RIAplayer.getPlayerMaxHealth();
+		if((health+UpHealth) > Maxhealth)
+		{
+			RIAplayer.setPlayerHealth(Maxhealth);
+			//if(Debug) Bukkit.broadcastMessage("흡혈 후 최대 채력을 넘으므로 최대 체력으로 회복: " + Maxhealth);
+		}
+		else if((health+UpHealth) < 0)
+		{
+			RIAplayer.setPlayerHealth(0.1);
+			//if(Debug) Bukkit.broadcastMessage("흡혈 후 체력이 0보다 낮으므로 0.1로 임시 지정: " + (health + UpHealth));
+		}
+		else
+		{
+			RIAplayer.setPlayerHealth(health + UpHealth);
+			//if(Debug) Bukkit.broadcastMessage("흡혈 후 체력: " + (health + UpHealth));
+		}
 	}
 }

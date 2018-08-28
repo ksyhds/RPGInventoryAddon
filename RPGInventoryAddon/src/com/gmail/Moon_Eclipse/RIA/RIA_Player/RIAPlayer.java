@@ -35,6 +35,20 @@ public class RIAPlayer
 	{
 		return MineCraftPlayer;
 	}
+	public double getPlayerHealth() 
+	{
+		return MineCraftPlayer.getHealth();
+	}
+	public double getPlayerMaxHealth() 
+	{
+		AttributeInstance healthAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+		
+		return healthAttribute.getBaseValue();
+	}
+	public void setPlayerHealth(double hp) 
+	{	
+		MineCraftPlayer.setHealth(hp);
+	}
 	public void setMoveSpeedByAttributeMap()
 	{
 		// 플레이어의 기본 걷기 속도를 계산을 위해 지정. 걷기: 0.2f, 날기:0.1f
@@ -60,5 +74,31 @@ public class RIAPlayer
 		
 		// 최대 체력으로 체력을 회복시킴
 		MineCraftPlayer.setHealth(healthAttribute.getBaseValue());	
+	}
+	public void runpersonnalTimer() 
+	{
+		//타이머 구현
+		{
+			//double health = RIAplayer.getPlayerHealth();
+			//if(Debug) Bukkit.broadcastMessage("플레이어의 현재 체력: " + health);
+			
+			//double SuckValue = per;
+			//if(Debug) Bukkit.broadcastMessage("흡혈할 정도: " + SuckValue + "%");
+					
+			//double Maxhealth = RIAplayer.getPlayerMaxHealth();
+			//if(health == Maxhealth)
+			{
+				
+			}
+			//else if(health < 0)
+			{
+				
+			}
+			//else
+			{
+				//RIAplayer.setPlayerHealth(health + UpHealth);
+				//if(Debug) Bukkit.broadcastMessage("흡혈 후 체력: " + (health + UpHealth));
+			}
+		}
 	}
 }

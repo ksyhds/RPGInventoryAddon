@@ -1,6 +1,12 @@
 config:
   AttriuteList:
 
+    Absorption_Health_Name: "생명력흡수"
+
+    Defence_Damage_Name: "피해감소"
+
+    Reduce_Damage_Name: "피해무시"
+
     #공격력 스탯. 기본 공격력 스탯입니다. Offset으로서 작용
     Base_Attack_Damage_Name: "공격력"
 

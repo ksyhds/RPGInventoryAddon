@@ -39,7 +39,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		
 		//서버를 켜면서 config설정을 저장, 이벤트에 config 문서를 넘기기 위해 이벤트 등록보다 먼저 처리함.
 		ReloadConfig();
-
+		
 	}
 	public void onDisable(){}
 
@@ -92,6 +92,15 @@ public class RPGInventoryAddon extends JavaPlugin
 		// config 파일에 명시된 치명타확률 이름을 받아와 저장
 		RIAStats.Critical_Probability_Name = c.getString("config.AttriuteList.Critical_Probability_Name");
 		 
+		// config 파일에 명시된 피해 감소의 이름을 받아와 저장
+		RIAStats.Defence_Damage_Name = c.getString("config.AttriuteList.Defence_Damage_Name");
+		
+		// config 파일에 명시된 피해 무시의 이름을 받아와 저장
+		RIAStats.Reduce_Damage_Name = c.getString("config.AttriuteList.Reduce_Damage_Name");
+		
+		// config 파일에 명시된 생명력 흡수의 이름을 받아와 저장
+		RIAStats.Absorption_Health_Name = c.getString("config.AttriuteList.Absorption_Health_Name");
+		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
 	
