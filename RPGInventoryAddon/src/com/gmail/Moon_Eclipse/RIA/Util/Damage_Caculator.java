@@ -16,7 +16,6 @@ public class Damage_Caculator
 {
 	
 	// RIA 플레이어 매니저 인스턴스를 생성
-	static WrapperManager wm = new WrapperManager();
 /*
 	// 맵의 키로서 사용할 각 스탯의 이름을 얻어옴
 	// 기본 데미지. offset으로써 활용됨
@@ -50,6 +49,10 @@ public class Damage_Caculator
 		RIADebugger.AddMessage_to_MessageStack("Critical_Attack_Damage_Name: " + RIAStats.Critical_Attack_Damage_Name);
 		RIADebugger.AddMessage_to_MessageStack("Critical_Probability_Name: " + RIAStats.Critical_Probability_Name);
 		
+		//공격자와 피격자 기록
+		RIADebugger.AddMessage_to_MessageStack("공격자: "+ damager.getType().getName());
+		RIADebugger.AddMessage_to_MessageStack("피격자: "+ target.getType().getName());
+		
 		
 		// 데미지 기록
 		RIADebugger.AddMessage_to_MessageStack("플러그인이 최초에 넘겨 받은 데미지: " + Event_Damage);
@@ -78,32 +81,36 @@ public class Damage_Caculator
 			Player player_target = (Player) target;	
 			
 			// 공격자의 RIA 정보를 얻어옴, 디버그에 추가
-			RIAPlayer RIA_Damager = wm.getRIAPlayer(player_damager);
+			RIAPlayer RIA_Damager = WrapperManager.getRIAPlayer(player_damager.getName());
 			
 			// 피격자의 RIA 정보를 얻어옴
-			RIAPlayer RIA_Target = wm.getRIAPlayer(player_target);			
+			RIAPlayer RIA_Target = WrapperManager.getRIAPlayer(player_target.getName());			
 			
 			// 공격자의 데이터 스테이터스 맵을 받아옴
-			Map<String,Float> RIA_Damager_Stat_map = RIA_Damager.getAttributeMap();
+			Map<String,Double> RIA_Damager_Stat_map = RIA_Damager.getAttributeMap();
 			RIADebugger.AddMessage_to_MessageStack("공격자의 스탯 테이블: " + RIA_Damager_Stat_map.toString());
 			
 			// 피격자의 데이터 스테이터스 맵을 받아옴
-			Map<String,Float> RIA_Target_Stat_map = RIA_Target.getAttributeMap();
+			Map<String,Double> RIA_Target_Stat_map = RIA_Target.getAttributeMap();
 			RIADebugger.AddMessage_to_MessageStack("피격자의 스탯 테이블: " + RIA_Target_Stat_map.toString());
 			
 	//--------------------데미지 증가 파트--------------------
 			
 			// 공격자의 기본 데미지 스탯을 얻어옴
 			double Damager_Base_Damage = RIA_Damager_Stat_map.get(RIAStats.Base_Attack_Damage_Name);
+			RIADebugger.AddMessage_to_MessageStack("공격자의 기본 데미지: " + Damager_Base_Damage);
 			
 			// 공격자의 일반 데미지 스탯을 얻어옴
 			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(RIAStats.Normal_Attack_Damage_Name);
+			RIADebugger.AddMessage_to_MessageStack("공격자의 일반 데미지: " + Damager_Normal_Damage);
 			
 			// 공격자의 크리티컬 성공 확률을 얻어옴
 			double Critical_Probability = RIA_Damager_Stat_map.get(RIAStats.Critical_Probability_Name);
-					
+			RIADebugger.AddMessage_to_MessageStack("공격자의 크리티컬 성공 확률: " + Critical_Probability);
+				
 			// 공격자의 크리티컬 데미지 퍼센트를 얻어옴. 몇%를 원래 데미지에 더하는 연산에 사용
 			double Critical_Damage = RIA_Damager_Stat_map.get(RIAStats.Critical_Attack_Damage_Name);	
+			RIADebugger.AddMessage_to_MessageStack("공격자의 크리티컬 데미지: " + Critical_Damage);
 			
 			// 공격자의 크리티컬이 성공하는지 아닌지 계산
 			boolean Can_Critical = RIAUtil.CanPlayerActivateCriticalDamage(Critical_Probability);
@@ -111,7 +118,7 @@ public class Damage_Caculator
 			
 			// 데미지는 offset인 기본 데미지와 일반 데미지의 합으로 이루어짐 
 			// Base_Attack_Damage_Name + Normal_Attack_Damage_Name = New_Damage
-			New_Damage = Damager_Base_Damage + Damager_Normal_Damage;
+			New_Damage += (Damager_Base_Damage + Damager_Normal_Damage);
 			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 
@@ -158,32 +165,37 @@ public class Damage_Caculator
 			LivingEntity monster_target = (LivingEntity)target;
 			
 			// 공격자의 RIA 정보를 얻어옴
-			RIAPlayer RIA_Damager = wm.getRIAPlayer(player_damager);
+			RIAPlayer RIA_Damager = WrapperManager.getRIAPlayer(player_damager.getName());
 			
 			// 공격자의 데이터 스테이터스 맵을 받아옴
-			Map<String,Float> RIA_Damager_Stat_map = RIA_Damager.getAttributeMap();
+			Map<String,Double> RIA_Damager_Stat_map = RIA_Damager.getAttributeMap();
 			RIADebugger.AddMessage_to_MessageStack("공격자의 스탯 테이블: " + RIA_Damager_Stat_map.toString());
 			
 	//--------------------데미지 증가 파트--------------------
 			
 			// 공격자의 기본 데미지 스탯을 얻어옴
 			double Damager_Base_Damage = RIA_Damager_Stat_map.get(RIAStats.Base_Attack_Damage_Name);
+			RIADebugger.AddMessage_to_MessageStack("공격자의 기본 데미지: " + Damager_Base_Damage);
 			
 			// 공격자의 일반 데미지 스탯을 얻어옴
 			double Damager_Normal_Damage = RIA_Damager_Stat_map.get(RIAStats.Normal_Attack_Damage_Name);
+			RIADebugger.AddMessage_to_MessageStack("공격자의 일반 데미지: " + Damager_Normal_Damage);
 			
 			// 공격자의 크리티컬 성공 확률을 얻어옴
 			double Critical_Probability = RIA_Damager_Stat_map.get(RIAStats.Critical_Probability_Name);
+			RIADebugger.AddMessage_to_MessageStack("공격자의 크리티컬 성공 확률: " + Critical_Probability);
 					
 			// 공격자의 크리티컬 데미지 퍼센트를 얻어옴. 몇%를 원래 데미지에 더하는 연산에 사용
 			double Critical_Damage = RIA_Damager_Stat_map.get(RIAStats.Critical_Attack_Damage_Name);	
+			RIADebugger.AddMessage_to_MessageStack("공격자의 크리티컬 데미지: " + Critical_Damage);
 			
 			// 공격자의 크리티컬이 성공하는지 아닌지 계산
 			boolean Can_Critical = RIAUtil.CanPlayerActivateCriticalDamage(Critical_Probability);
+			RIADebugger.AddMessage_to_MessageStack("크리티컬 성공?: " + Can_Critical);
 			
 			// 데미지는 offset인 기본 데미지와 일반 데미지의 합으로 이루어짐 
 			// Base_Attack_Damage_Name + Normal_Attack_Damage_Name = New_Damage
-			New_Damage = Damager_Base_Damage + Damager_Normal_Damage;
+			New_Damage += (Damager_Base_Damage + Damager_Normal_Damage);
 			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 
@@ -205,6 +217,7 @@ public class Damage_Caculator
 	//--------------------데미지 설정 파트--------------------
 	
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
+			RIADebugger.AddMessage_to_MessageStack("연산 마지막 데미지: " + New_Damage);
 			return New_Damage;
 						
 		}
@@ -218,10 +231,10 @@ public class Damage_Caculator
 			Player player_target = (Player)target;
 			
 			// 피격자의 RIA 정보를 얻어옴
-			RIAPlayer RIA_Target = wm.getRIAPlayer(player_target);
+			RIAPlayer RIA_Target = WrapperManager.getRIAPlayer(player_target.getName());
 			
 			// 피격자의 데이터 스테이터스 맵을 받아옴
-			Map<String,Float> RIA_Target_Stat_map = RIA_Target.getAttributeMap();
+			Map<String,Double> RIA_Target_Stat_map = RIA_Target.getAttributeMap();
 			RIADebugger.AddMessage_to_MessageStack("피격자의 스탯 테이블: " + RIA_Target_Stat_map.toString());
 			
 	//--------------------데미지 증가 파트--------------------
@@ -241,15 +254,13 @@ public class Damage_Caculator
 	//--------------------데미지 설정 파트--------------------
 	
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
+			RIADebugger.AddMessage_to_MessageStack("연산 마지막 데미지: " + New_Damage);
 			return New_Damage;
 		}
-		
-		//어떤 부분에도 속하지 않을경우.  사실상 이런 경우는 없으므로 무조건 적으로 로그를 출력함.
-
-		RIADebugger.SendErrorMessage_OperatorAndConsole("RIA: 데미지 계산에서 오류가 발생했습니다. 데미지가 0으로 수정됩니다.");
-		RIADebugger.SendErrorMessage_OperatorAndConsole("RIA: 이 오류는 공격자와 피격자가 명확히 구분되지 못했을때 나타납니다.");
-		RIADebugger.SendStackedDebugMessage_Console();
-		return 0d;
+		else
+		{
+			return Event_Damage;
+		}
 	}
 	public static double getPercentedDamage_Plus(double Damage, double per) 
 	{

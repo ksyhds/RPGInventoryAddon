@@ -3,6 +3,7 @@ package com.gmail.Moon_Eclipse.RIA.event;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,33 +27,37 @@ public class EntityDamageByEntity implements Listener
 		Entity target = event.getEntity();
 		
 		// 데미지를 입히는 주체인 공격자를 얻어와 저장
-		LivingEntity damager = (LivingEntity) event.getDamager();
+		Entity damager = event.getDamager();
 		
 		// 만약 공격자가 투사체 라면
 		if(event.getCause().toString().equals("PROJECTILE"))
 		{
 			// 투사체를 투척한 사람을 가져와 공격자를 재설정
-			damager = (LivingEntity) ((Projectile) damager).getShooter();
-		}
-		
-		// 만약 손에 철 곡괭이를 들고있고, 일반 좌클릭으로 공격한 경우라면
-		if(damager.getEquipment().getItemInMainHand().getType().equals(Material.IRON_PICKAXE) && event.getCause().equals(DamageCause.ENTITY_ATTACK))
-		{
-			//이 이벤트의 데미지를 0으로 설정함
-			event.setDamage(0d);
-			
-			// 이벤트 종료
-			return;
+			damager = (Entity)((Projectile) damager).getShooter();
 		}
 
-		// 이벤트 발생시의 데미지를 얻어와 저장해둠.
-		double Event_Damage = event.getDamage();
-		
-		// util의 데미지 계산기를 사용해 이 이벤트의 데미지를 계산
-		double New_Damage = Damage_Caculator.Damage_Calculate(Event_Damage, event.getDamager(), target);
-		
-		// 데미지의 계산이 끝났으므로 데미지를 적용.
-		event.setDamage(New_Damage);
+		// 만약 전투에 사람이 포함되어 있다면
+		if(damager instanceof Player || target instanceof Player)
+		{
+			// 만약 손에 철 곡괭이를 들고있고, 일반 좌클릭으로 공격한 경우라면
+			if(((LivingEntity)damager).getEquipment().getItemInMainHand().getType().equals(Material.IRON_PICKAXE) && event.getCause().equals(DamageCause.ENTITY_ATTACK))
+			{
+				//이 이벤트의 데미지를 0으로 설정함
+				event.setDamage(0d);
+				
+				// 이벤트 종료
+				return;
+			}
+			
+			// 이벤트 발생시의 데미지를 얻어와 저장해둠.
+			double Event_Damage = event.getDamage();
+			
+			// util의 데미지 계산기를 사용해 이 이벤트의 데미지를 계산
+			double New_Damage = Damage_Caculator.Damage_Calculate(Event_Damage, damager, target);
+			
+			// 데미지의 계산이 끝났으므로 데미지를 적용.
+			event.setDamage(New_Damage);
+		}		
 	}	
 }
 	

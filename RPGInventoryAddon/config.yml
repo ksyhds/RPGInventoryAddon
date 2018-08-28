@@ -1,13 +1,16 @@
 config:
   AttriuteList:
+    
+    Additioanl_Health_Name: "생명력"
 
     Absorption_Health_Name: "생명력흡수"
+
+    Regeneration_Health_Name: "생명력재생"
 
     Defence_Damage_Name: "피해감소"
 
     Reduce_Damage_Name: "피해무시"
 
-    #공격력 스탯. 기본 공격력 스탯입니다. Offset으로서 작용
     Base_Attack_Damage_Name: "공격력"
 
     Normal_Attack_Damage_Name: "일반공격력"
@@ -21,7 +24,7 @@ config:
     Walk_Speed_Name: "이동속도"
   
   #로어의 어떤줄이 스탯을 담당하는지 구분하는 표식으로써 무엇을 사용할지 지정해 주세요.
-  Lore_Identifier: "*"
+  Lore_Identifier: "\\*"
 
   #최종 스킬 공격력에 관련된 이름을 적어주세요. 손에 든 아이템에 이 스탯이 있어야 스탯 값 덮어쓰기가 작동합니다.
   Total_Skill_Damage_Name: "최종 스킬 공격력"
