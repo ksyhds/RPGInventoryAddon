@@ -101,6 +101,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		// config 파일에 명시된 생명력 흡수의 이름을 받아와 저장
 		RIAStats.Absorption_Health_Name = c.getString("config.AttriuteList.Absorption_Health_Name");
 		
+		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
 	
