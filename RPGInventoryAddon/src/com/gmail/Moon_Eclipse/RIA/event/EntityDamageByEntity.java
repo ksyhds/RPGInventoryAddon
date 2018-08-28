@@ -1,27 +1,15 @@
 package com.gmail.Moon_Eclipse.RIA.event;
 
-import java.util.Map;
-
-import javax.swing.DebugGraphics;
-
 import org.bukkit.Material;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
-import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 import com.gmail.Moon_Eclipse.RIA.Util.Damage_Caculator;
-import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
-import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
-import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 public class EntityDamageByEntity implements Listener 
 {

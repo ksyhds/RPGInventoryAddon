@@ -8,7 +8,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
 import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
-import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 public class RIAPlayer 
 {
@@ -61,7 +60,5 @@ public class RIAPlayer
 		
 		// 최대 체력으로 체력을 회복시킴
 		MineCraftPlayer.setHealth(healthAttribute.getBaseValue());	
-		
-		AttributeInstance healthAttribute2 = MineCraftPlayer.getAttribute(Attribute.HORSE_JUMP_STRENGTH);
 	}
 }

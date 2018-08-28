@@ -6,7 +6,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
-import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 public class PlayerJoin implements Listener
 {

@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
-import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 public class PlayerItemHeld implements Listener
