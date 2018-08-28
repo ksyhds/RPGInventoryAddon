@@ -7,6 +7,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
+import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
+import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
+
 public class RIAPlayer 
 {
 	//RIA 플레이어의 기본값이 될 마인크래프트 플레이어값을 저장하기위한 공간을 마련함.
@@ -54,7 +57,7 @@ public class RIAPlayer
 		
 		// 맵의 생명력과 기본 생명력을 더해서 최대 체력을 지정함, setMaxHealth를 대신할Attribute를 처음 사용 
 		AttributeInstance healthAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-		healthAttribute.setBaseValue(RIAUtil.Default_Health_Point + HP);
+		healthAttribute.setBaseValue(RIAStats.Default_Health_Point + HP);
 		
 		// 최대 체력으로 체력을 회복시킴
 		MineCraftPlayer.setHealth(healthAttribute.getBaseValue());	

@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
-import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAUtil;
+import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 import ru.endlesscode.rpginventory.api.InventoryAPI;
 

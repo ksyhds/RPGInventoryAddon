@@ -1,45 +1,43 @@
-package com.gmail.Moon_Eclipse.RIA.RIA_Player;
+package com.gmail.Moon_Eclipse.RIA.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
+import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 
 import ru.endlesscode.rpginventory.api.*;
 
 
 public class RIAUtil
 {
-	public static double Default_Health_Point = 0d;
 	
-	public static float Default_Walk_Speed = 0f;
+	static Random rnd = new Random();
 	
-	public static List<String> Attribute_Names;
-	
-	public static String Total_Skill_Damage_Name = "";
-	
-	public static String Attribute_Lore_Identifier = "";
-	
-	public static Map<String, Float> AttributeMap = new HashMap<String, Float>();
-
 	static WrapperManager wm = new WrapperManager();
+
+	public static Map<String, Float> AttributeMap = new HashMap<String, Float>();
 
 	public static void ResetAttributeMap()
 	{
-		for(String string : Attribute_Names)
+		for(String string : RIAStats.Attribute_Names)
 		{
 			AttributeMap.put(string,0f);
 		}
 		
 		// 이동속도 계수의 계산을 위해 초기값을 100으로 지정. (% 계산이기 때문)
-		AttributeMap.put("이동속도", Default_Walk_Speed);
+		AttributeMap.put("Walk_Speed_Name", RIAStats.Default_Walk_Speed);
 	}
-
 	public static List<ItemStack> getActiveItemStackList(Player player)
 	{
 		return InventoryAPI.getActiveItems(player);
@@ -56,7 +54,7 @@ public class RIAUtil
 		String[] args = lore.split(": ");
 		
 		// 스탯 이름만을 반환하도록 * 를 제거
-		args[0] = args[0].replaceAll(Attribute_Lore_Identifier + " ", "");
+		args[0] = args[0].replaceAll(RIAStats.Attribute_Lore_Identifier + " ", "");
 		
 		// 스탯 값만 반환하도록 %를 제거
 		args[1] = args[1].replaceAll("%", "");
@@ -130,15 +128,15 @@ public class RIAUtil
 						String Attribute_name = Splitter(lore)[0];
 						
 						// 만약 로어의 이름과 목표하는 이름이 같다면
-						if(Attribute_name.equals(Total_Skill_Damage_Name))
+						if(Attribute_name.equals(RIAStats.Total_Skill_Damage_Name))
 						{
 							//"* &e최종 스킬 공격력: &d@.0"
 							
-							// 유저의 맵에서 스킬 공격력에 대한 값을 가져옴
-							float att_value = map.get(Attribute_name.replaceAll("최종 ", ""));
+							// 유저의 맵에서 스킬 공격력에 대한 값을 가져옴. 최종 스킬 공격력 = (스킬 공격력 + 기본 공격력) 이므로 둘을 더함.
+							float att_value = map.get(RIAStats.Skill_Attack_Damage_Name) + map.get(RIAStats.Base_Attack_Damage_Name);
 							
 							// 새로운 최종 스킬 공격력 로어를 설정. 자리수를 설정한 float 값을 적용
-							String new_att = "§f" + Attribute_Lore_Identifier + " §e" + Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
+							String new_att = "§f" + RIAStats.Attribute_Lore_Identifier + " §e" + RIAStats.Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
 							
 							// 새로운 로어에 새로 만든 최종 스킬 공격력을 추가
 							New_Lore.add(new_att);
@@ -210,7 +208,7 @@ public class RIAUtil
 						lore = ChatColor.stripColor(lore);
 						
 						// 만약 로어의 내용이 속성이름에 등록되었다면.
-						if(lore.contains(Attribute_Lore_Identifier) && hasAttributeString(Attribute_Names, lore))
+						if(lore.contains(RIAStats.Attribute_Lore_Identifier) && hasAttributeString(RIAStats.Attribute_Names, lore))
 						{
 							
 							// 스탯 형식
@@ -267,4 +265,41 @@ public class RIAUtil
 		}
 		return false;
 	}	
+	// 리스트 하위항목의 value들로 리스트를 만들어서 반환해주는 메소드
+	public static void setRIAAttributeList(ConfigurationSection c_sec)
+	{
+		// 섹션 내의 키를 모두 불러와 set에 저장
+		Set<String> keys = c_sec.getKeys(false);
+		
+		// value 값을 담을 저장공간 리스트를 생성
+		List<String> Att_names = new ArrayList<String>();
+		
+		// 키를 하나씩 불러와 반복
+		for(String key : keys) 
+		{
+			// 각 키의 값을 불러와 변수에 저장
+			String value = c_sec.getString("config.AttriuteList." + key);
+			
+			// 각 값을 리스트에 저장
+			Att_names.add(value);
+		}
+		
+		// 만들어진 목록을 클래스 저장공간에 저장
+		RIAStats.Attribute_Names =  Att_names;
+	}
+	public static boolean CanPlayerActivateCriticalDamage(double percent)
+	{
+		boolean re = false;
+
+		int random = rnd.nextInt(99) + 1;
+		double per = ((double)random / (double)100) * 100;
+		//Bukkit.broadcastMessage(per + " + per");
+		//Bukkit.broadcastMessage(percent + " + percent");
+		if(per <= percent)
+		{
+			re = true;
+		}
+		//Bukkit.broadcastMessage("CanPlayerActivateCriticalDamage return: " + re);
+		return re;
+	}
 }

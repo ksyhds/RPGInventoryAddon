@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon;
-import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAUtil;
+import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 
 public class Commands implements CommandExecutor
 {
