@@ -10,9 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon;
+import com.gmail.Moon_Eclipse.RIA.Link_Plugin.Link_SkillAPI;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 
 public class Commands implements CommandExecutor
 {
@@ -56,6 +59,9 @@ public class Commands implements CommandExecutor
 						case "reload":
 							player.sendMessage("RIA reload");
 							RPGInventoryAddon.getInstance().ReloadConfig();
+							
+							player.sendMessage(Link_SkillAPI.getPlayerBaseMaxHealth(player)+"");
+							
 						break;
 						case "inv":
 							// 플레이어에게 메세지 출력

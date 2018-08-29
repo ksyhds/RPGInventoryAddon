@@ -37,5 +37,5 @@ public class RIAStats
 	
 	public static String Additioanl_Health_Name = "";
 	
-	public static String  Regeneration_Health_Name = "";
+	public static String Regeneration_Health_Name = "";
 }

@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon;
+import com.gmail.Moon_Eclipse.RIA.Link_Plugin.Link_SkillAPI;
 import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
 
@@ -17,6 +18,8 @@ public class RIAPlayer
 {
 	//RIA 플레이어의 기본값이 될 마인크래프트 플레이어값을 저장하기위한 공간을 마련함.
 	public final Player MineCraftPlayer;
+	
+	public double SkillAPI_Health_Point;
 	
 	public static Map<String, Double> AttributeMap;
 
@@ -26,6 +29,8 @@ public class RIAPlayer
 		// 생성된 RIA 클래스의 기존 마인크래프트 클래스를 저장.
 		MineCraftPlayer = p;
 		AttributeMap = new HashMap<String,Double>();
+		SkillAPI_Health_Point = RIAStats.Default_Health_Point;
+		runpersonnalTimer();
 		initialize_attmap();
 	}
 	public void setAttributeMap(Map<String, Double> Map)
@@ -86,12 +91,17 @@ public class RIAPlayer
 	}
 	public void setHitPointByAttributeMap() 
 	{
+		//체력을 변경하기전에 스킬api의 값을 얻어와 기본 체력값 조절
+		UpdateRIAPlayerMaxHealth();
+		
 		// 맵에 저장되어 있는 생명력을 얻어옴
 		double HP = AttributeMap.get(RIAStats.Additioanl_Health_Name);
 		
 		// 맵의 생명력과 기본 생명력을 더해서 최대 체력을 지정함, setMaxHealth를 대신할Attribute를 처음 사용 
 		AttributeInstance healthAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-		healthAttribute.setBaseValue(RIAStats.Default_Health_Point + HP);
+		
+		// 기반이 될 체력은 만약 skillapi의직업이 없다면 이 플러그인 기반 체력이 될 것이고, 직업이 있다면 그 직업의 체력으로 변할 것임.
+		healthAttribute.setBaseValue(SkillAPI_Health_Point + HP);
 		
 	}
 	public void AddHitPointByAttributeMap()
@@ -99,25 +109,55 @@ public class RIAPlayer
 		// 맵에 저장되어 있는 생명력 재생값을 얻어옴
 		double Additional_HP = AttributeMap.get(RIAStats.Regeneration_Health_Name);
 		
-		MineCraftPlayer.setHealth(getPlayerMaxHealth() + Additional_HP);	
+		// 설정할 값을 미리 계산해둠
+		double Final_HP = MineCraftPlayer.getHealth() + Additional_HP;
 		
+		// 설정할 체력이 최대 체력보다 작거나 같다면
+		if(Final_HP <= getPlayerMaxHealth())
+		{
+			// 체력을 계산된 만큼 회복
+			MineCraftPlayer.setHealth(Final_HP);
+		}
+		else
+		{
+			// 계산된 체력이 최대 체력보다 크다면 최대 체력으로 대상의 체력을 회복
+			MineCraftPlayer.setHealth(getPlayerMaxHealth());
+		}
 	}
 	public void runpersonnalTimer() 
 	{
-		RIAPlayer RIAplayer = this;
         BukkitTask task = new BukkitRunnable() 
 		{
         	
             @Override
             public void run() 
             {	
-				double Maxhealth = RIAplayer.getPlayerMaxHealth();
+				double Maxhealth = UpdateRIAPlayerMaxHealth() + AttributeMap.get(RIAStats.Additioanl_Health_Name);
 				
 				if(MineCraftPlayer.getHealth() < Maxhealth)
 				{
 					AddHitPointByAttributeMap();
 				}
+				else if(MineCraftPlayer.getHealth() > Maxhealth)
+				{
+					MineCraftPlayer.setHealth(Maxhealth);	
+				}
 			}
         }.runTaskTimer(RPGInventoryAddon.getInstance(), 0, 20);
+	}
+	public double UpdateRIAPlayerMaxHealth()
+	{
+		double health = Link_SkillAPI.getPlayerBaseMaxHealth(MineCraftPlayer);
+		if(health == 0)
+		{
+			SkillAPI_Health_Point = RIAStats.Default_Health_Point;
+		}
+		else
+		{
+			SkillAPI_Health_Point = health;
+		}
+		
+		return health;
+		
 	}
 }

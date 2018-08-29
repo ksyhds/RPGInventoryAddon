@@ -27,7 +27,7 @@ public class InventoryClose implements Listener
 		if(InventoryAPI.isRPGInventory(inv))
 		{
 			// 플레이어의 스탯 맵과 손에든 아이템 갱신
-			RIAUtil.SetPlayerDataAndStat(player);
+			RIAUtil.SetPlayerDataAndStat(player, player.getInventory().getHeldItemSlot());
 		}
 	}
 }

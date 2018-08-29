@@ -66,37 +66,34 @@ public class RIAUtil
 		
 		return args;
 	}
-	public static void SetPlayerDataAndStat(Player player) 
+	public static void SetPlayerDataAndStat(Player player, int New_Item_Slot) 
 	{
 		// RIA 플레이어를 받아와 저장
 		RIAPlayer rp = WrapperManager.getRIAPlayer(player.getName());
 
 		// RPG 인벤토리일 경우 플레이어의 RPG 인벤토리 장비들을 받아옴
-		List<ItemStack> Armors = RIAUtil.getPlayerArmor(player);
+		List<ItemStack> Armors = RIAUtil.getPlayerArmor(player, New_Item_Slot);
 				
 		// 장비가 하나도 없지 않다면
 		if(!Armors.isEmpty())
 		{
 			// 인벤토리의 장비목록을 통해 능력치 정보를 모은 맵을 얻어옴
 			Map<String,Double> AttributeMap = RIAUtil.ArmorDamataExtractor(Armors);
+			RIADebugger.AddMessage_to_MessageStack("아머 데이터 추출 후 능력치: " + AttributeMap.toString());
 			
-			// 액티브 아이템에 덮어쓸 것인지 아닌지를 결정하기 위해 리스트를 불러옴
-			List<ItemStack> ActiveItems =  getPassiveItemStack(player);
+			// 메인 무기 아이템의 최종 스킬 공격력을 바꾸기 위해 타겟이 될 아이템을 가져옴
+			ItemStack HandItem = player.getInventory().getItem(New_Item_Slot);
 			
 			// 만약 액티브아이템이 존재한다면
-			if(!ActiveItems.isEmpty())
+			if(!(HandItem == null || HandItem.getType().equals(Material.AIR)))
 			{
-				// 메인 무기 아이템의 최종 스킬 공격력을 바꾸기 위해 타겟이 될 아이템을 가져옴
-				ItemStack HandItem = ActiveItems.get(0);
-				
 				// 타겟 아이템의 정보를 기반으로 최종 스킬 공격력을 수정한 같은 아이템을 만듦
 				ItemStack new_HandItem = RIAUtil.DamageDataFixer(HandItem, AttributeMap);
 
 				// 플레이어의 손에 있는 아이템을 새로운 결과 아이템으로 변경함.
 				// 이 부분은 차후에 변경할 것. 장비의 위치가 고정된다면 그 위치에 덮어쓰면 될 것
-				//player.getEquipment().setItemInMainHand(new_HandItem);
+				player.getInventory().setItem(New_Item_Slot, new_HandItem);
 			}
-			
 			
 			// 장비의 스탯 정보를 갖고 있는 맵을 해당 플레이어 객체에 저장해둠. 차후에 데미지 연산 등에 쓰임.
 			rp.setAttributeMap(AttributeMap);
@@ -118,7 +115,7 @@ public class RIAUtil
 		List<String> New_Lore = new ArrayList<String>();
 		
 		// 만약 맨손이 아니고 손의 아이템에 아이템 속성이 있다면
-		if(!(item.equals(null) || item.equals(Material.AIR)) && item.hasItemMeta())
+		if(!(item == null || item.equals(Material.AIR)) && item.hasItemMeta())
 		{
 			// 아이템 속성을 저장
 			ItemMeta meta = item.getItemMeta();
@@ -136,10 +133,10 @@ public class RIAUtil
 					if(lore.contains(":")) 
 					{
 						//로어의 모든 색 코드를 제거
-						lore = ChatColor.stripColor(lore);
+						String Striped_Lore = ChatColor.stripColor(lore);
 						
 						// 구분자를 통해 로어에서 스탯 이름을 얻어옴 (아마도 "최종 스킬 공격력")
-						String Attribute_name = Splitter(lore)[0];
+						String Attribute_name = Splitter(Striped_Lore)[0];
 						
 						// 만약 로어의 이름과 목표하는 이름이 같다면
 						if(Attribute_name.equals(RIAStats.Total_Skill_Damage_Name))
@@ -179,7 +176,7 @@ public class RIAUtil
 	}
 
 	//RPG인벤에서 아이템을 얻어오는 장비취득자
-	public static List<ItemStack> getPlayerArmor(Player player)
+	public static List<ItemStack> getPlayerArmor(Player player, int New_Slot)
 	{
 		// 실험을 통해 손에 들고 있는 아이템이 포함되는지 확인해봐야함.
 		// 액티브 아이템: 무기
@@ -189,14 +186,21 @@ public class RIAUtil
 		// 입고있는 갑옷만 받아옴
 		ItemStack[] NativeItems = player.getEquipment().getArmorContents();
 		
-		// 주 무기는 RPG인벤에서 처리할 것이므로 보조무기만 추가하기위해 보조무기 저장
+		// 손에 들고있는 아이템을 얻어와서 저장
+		ItemStack HandItem = player.getInventory().getItem(New_Slot);
+		
+		//  보조무기를 추가하기위해 보조무기 저장
 		ItemStack OffHandItem = player.getEquipment().getItemInOffHand();
 		
-		// 액티브 아이템 - 주무기 저장
+		
+		// 액티브 아이템 - 주무기 저장 >> 설정에서 사용하지 않게 되면서 액티브 무기의 의미가 없어짐. 손의 무기를 수동으로 추가.
 		List<ItemStack> ActiveItems = getActiveItemStackList(player);
+		RIADebugger.AddMessage_to_MessageStack(ActiveItems.toString());
 		
 		// 패시브 아이템 저장
 		List<ItemStack> PassiveItems = getPassiveItemStack(player);
+		RIADebugger.AddMessage_to_MessageStack(PassiveItems.toString());
+		
 
 		// 종합 아이템 목록을 만들기위해 아이템 목록 생성
 		List<ItemStack> re = new ArrayList<ItemStack>();
@@ -213,18 +217,25 @@ public class RIAUtil
 		for(ItemStack i : NativeItems)
 		{
 			// 만약 맨손이 아니고 손의 아이템에 아이템 속성이 있다면
-			if(!(i.equals(null) || i.equals(Material.AIR)) && i.hasItemMeta())
+			if(!(i == null || i.equals(Material.AIR)))
 			{
-				// 아이템 속성을 저장
-				ItemMeta meta = i.getItemMeta();
-				
-				// 만약 아이템 속성안에 로어가 있다면
-				if(meta.hasLore()) 
+				if( i.hasItemMeta())
 				{
-					re.add(i);
+					// 아이템 속성을 저장
+					ItemMeta meta = i.getItemMeta();
+					
+					// 만약 아이템 속성안에 로어가 있다면
+					if(meta.hasLore()) 
+					{
+						re.add(i);
+					}
 				}
+
 			}
 		}
+		
+		// 주 무기 를 추가
+		re.add(HandItem);
 		
 		// 마지막에 보조무기 추가
 		re.add(OffHandItem);
@@ -241,7 +252,7 @@ public class RIAUtil
 
 		for(ItemStack item : items)
 		{
-			if(!(item.equals(null) || item.equals(Material.AIR)) && item.hasItemMeta())
+			if(!(item == null || item.equals(Material.AIR)) && item.hasItemMeta())
 			{
 				ItemMeta meta = item.getItemMeta();
 

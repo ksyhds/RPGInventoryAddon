@@ -274,32 +274,32 @@ public class Damage_Caculator
 	}
 	public static void BloodSuck(RIAPlayer RIAplayer, double per, double damage)
 	{
-		//if(Debug) Bukkit.broadcastMessage("--------흡혈 메소드에서 넘겨받은 데미지: " + damage + "------");
+		//RIADebugger.AddMessage_to_MessageStack("--------흡혈 메소드에서 넘겨받은 데미지: " + damage + "------");
 		
 		double health = RIAplayer.getPlayerHealth();
-		//if(Debug) Bukkit.broadcastMessage("플레이어의 현재 체력: " + health);
+		//RIADebugger.AddMessage_to_MessageStack("플레이어의 현재 체력: " + health);
 		
 		double SuckValue = per;
-		//if(Debug) Bukkit.broadcastMessage("흡혈할 정도: " + SuckValue + "%");
+		//RIADebugger.AddMessage_to_MessageStack("흡혈할 정도: " + SuckValue + "%");
 		
 		double UpHealth = (damage/100) * SuckValue;
-		//if(Debug) Bukkit.broadcastMessage("흡혈체력의 양: " + UpHealth);
+		//RIADebugger.AddMessage_to_MessageStack("흡혈체력의 양: " + UpHealth);
 		
 		double Maxhealth = RIAplayer.getPlayerMaxHealth();
 		if((health+UpHealth) > Maxhealth)
 		{
 			RIAplayer.setPlayerHealth(Maxhealth);
-			//if(Debug) Bukkit.broadcastMessage("흡혈 후 최대 채력을 넘으므로 최대 체력으로 회복: " + Maxhealth);
+			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 최대 채력을 넘으므로 최대 체력으로 회복: " + Maxhealth);
 		}
 		else if((health+UpHealth) < 0)
 		{
 			RIAplayer.setPlayerHealth(0.1);
-			//if(Debug) Bukkit.broadcastMessage("흡혈 후 체력이 0보다 낮으므로 0.1로 임시 지정: " + (health + UpHealth));
+			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력이 0보다 낮으므로 0.1로 임시 지정: " + (health + UpHealth));
 		}
 		else
 		{
 			RIAplayer.setPlayerHealth(health + UpHealth);
-			//if(Debug) Bukkit.broadcastMessage("흡혈 후 체력: " + (health + UpHealth));
+			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력: " + (health + UpHealth));
 		}
 	}
 }
