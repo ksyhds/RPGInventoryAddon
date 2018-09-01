@@ -121,6 +121,9 @@ public class RPGInventoryAddon extends JavaPlugin
 		//config 파일에 명시된 생명력 재생의 이름을 받아와 저장
 		RIAStats.Regeneration_Health_Name = c.getString("config.AttriuteList.Regeneration_Health_Name");
 		
+		//config 파일에 명시된 공격 속도의 이름을 받아와 저장
+		RIAStats.Attack_Speed_Name = c.getString("config.AttriuteList.Attack_Speed_Name");
+		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
 	

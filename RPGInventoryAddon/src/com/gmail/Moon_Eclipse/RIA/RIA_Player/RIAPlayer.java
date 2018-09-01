@@ -160,4 +160,8 @@ public class RIAPlayer
 		return health;
 		
 	}
+	public int getPlayerLevel()
+	{
+		return MineCraftPlayer.getLevel();
+	}
 }

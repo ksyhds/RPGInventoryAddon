@@ -120,6 +120,9 @@ public class Damage_Caculator
 			// Base_Attack_Damage_Name + Normal_Attack_Damage_Name = New_Damage
 			New_Damage += (Damager_Base_Damage + Damager_Normal_Damage);
 			
+			// 레벨마다 1씩 공격력이 오르게 됨.
+			New_Damage += RIA_Damager.getPlayerLevel();
+			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 
 			{
@@ -196,6 +199,9 @@ public class Damage_Caculator
 			// 데미지는 offset인 기본 데미지와 일반 데미지의 합으로 이루어짐 
 			// Base_Attack_Damage_Name + Normal_Attack_Damage_Name = New_Damage
 			New_Damage += (Damager_Base_Damage + Damager_Normal_Damage);
+			
+			// 레벨마다 1씩 공격력이 오르게 됨.
+			New_Damage += RIA_Damager.getPlayerLevel();
 			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 

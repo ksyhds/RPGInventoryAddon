@@ -1,6 +1,8 @@
 config:
   AttriuteList:
-    
+
+    Attack_Speed_Name: "공격속도"
+
     Additioanl_Health_Name: "생명력"
 
     Absorption_Health_Name: "생명력흡수"

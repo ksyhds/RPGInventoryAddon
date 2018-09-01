@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
+import com.Moon_eclipse.EclipseLib.LibMain;
 
 import ru.endlesscode.rpginventory.api.*;
 
@@ -81,6 +82,9 @@ public class RIAUtil
 			Map<String,Double> AttributeMap = RIAUtil.ArmorDamataExtractor(Armors);
 			RIADebugger.AddMessage_to_MessageStack("아머 데이터 추출 후 능력치: " + AttributeMap.toString());
 			
+			// 플레이어 레벨을 기록해 두기 위해 맵을 사용
+			AttributeMap.put("RIA_Player_Level", (double)rp.getPlayerLevel());
+			
 			// 메인 무기 아이템의 최종 스킬 공격력을 바꾸기 위해 타겟이 될 아이템을 가져옴
 			ItemStack HandItem = player.getInventory().getItem(New_Item_Slot);
 			
@@ -144,7 +148,7 @@ public class RIAUtil
 							//"* &e최종 스킬 공격력: &d@.0"
 							
 							// 유저의 맵에서 스킬 공격력에 대한 값을 가져옴. 최종 스킬 공격력 = (스킬 공격력 + 기본 공격력) 이므로 둘을 더함.
-							double att_value = map.get(RIAStats.Skill_Attack_Damage_Name) + map.get(RIAStats.Base_Attack_Damage_Name);
+							double att_value = map.get(RIAStats.Skill_Attack_Damage_Name) + map.get(RIAStats.Base_Attack_Damage_Name) + map.get("RIA_Player_Level");
 							
 							// 새로운 최종 스킬 공격력 로어를 설정. 자리수를 설정한 float 값을 적용
 							String new_att = "§f" + RIAStats.Attribute_Lore_Identifier + " §e" + RIAStats.Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
@@ -262,9 +266,31 @@ public class RIAUtil
 
 					for(String lore : Lores)
 					{
+							
 						//로어의 모든 색 코드를 제거
 						lore = ChatColor.stripColor(lore);
 						
+						// 만약 로어가 공격 속도라면
+						if(lore.contains(RIAStats.Attack_Speed_Name))
+						{
+							// 로어에 스탯 구분자를 추가해 스탯으로 인식하게끔 함
+							lore = "* " + lore;
+							
+							String[] Speed = lore.split(": ");
+							
+							// 빠른 정도를 리스트화 함
+							List<String> list = new ArrayList<String>();
+							list.add("의미_없는_더미_값");list.add("매우 빠름");list.add("빠름");list.add("보통");list.add("느림");list.add("매우 느림");
+							
+							// 빠른 정도가 얼마나 되는지 숫자로 구해냄
+							String target = LibMain.getNumberofList(list, Speed[1])+"";
+							
+							// 빠른 정도를 숫자로 변환함
+							lore = Speed[0] + ": " + target;
+							
+							RIADebugger.AddMessage_to_MessageStack(lore);
+							
+						}
 						// 만약 스탯 구분자가 있는 로어라면
 						if(lore.contains(RIAStats.Attribute_Lore_Identifier))
 						{
@@ -311,7 +337,6 @@ public class RIAUtil
 				continue;
 			}
 		}
-
 		return AttributeMap;
 	}
 	//받은 리스트의 내용에 주어진 단어와 정확히 일치하는 값이 있는가?
