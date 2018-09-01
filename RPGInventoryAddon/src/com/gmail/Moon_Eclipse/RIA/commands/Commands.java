@@ -60,8 +60,6 @@ public class Commands implements CommandExecutor
 							player.sendMessage("RIA reload");
 							RPGInventoryAddon.getInstance().ReloadConfig();
 							
-							player.sendMessage(Link_SkillAPI.getPlayerBaseMaxHealth(player)+"");
-							
 						break;
 						case "inv":
 							// 플레이어에게 메세지 출력

@@ -122,6 +122,7 @@ public class Damage_Caculator
 			
 			// 레벨마다 1씩 공격력이 오르게 됨.
 			New_Damage += RIA_Damager.getPlayerLevel();
+			RIADebugger.AddMessage_to_MessageStack("레벨에 의해 데미지 증가: " + RIA_Damager.getPlayerLevel());
 			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 
@@ -202,6 +203,7 @@ public class Damage_Caculator
 			
 			// 레벨마다 1씩 공격력이 오르게 됨.
 			New_Damage += RIA_Damager.getPlayerLevel();
+			RIADebugger.AddMessage_to_MessageStack("레벨에 의해 데미지 증가: " + RIA_Damager.getPlayerLevel());
 			
 			// 만약 크리티컬이 터졌다면
 			if(Can_Critical) 
@@ -280,32 +282,32 @@ public class Damage_Caculator
 	}
 	public static void BloodSuck(RIAPlayer RIAplayer, double per, double damage)
 	{
-		//RIADebugger.AddMessage_to_MessageStack("--------흡혈 메소드에서 넘겨받은 데미지: " + damage + "------");
+		RIADebugger.AddMessage_to_MessageStack("--------흡혈 메소드에서 넘겨받은 데미지: " + damage + "------");
 		
 		double health = RIAplayer.getPlayerHealth();
-		//RIADebugger.AddMessage_to_MessageStack("플레이어의 현재 체력: " + health);
+		RIADebugger.AddMessage_to_MessageStack("플레이어의 현재 체력: " + health);
 		
 		double SuckValue = per;
-		//RIADebugger.AddMessage_to_MessageStack("흡혈할 정도: " + SuckValue + "%");
+		RIADebugger.AddMessage_to_MessageStack("흡혈할 정도: " + SuckValue + "%");
 		
 		double UpHealth = (damage/100) * SuckValue;
-		//RIADebugger.AddMessage_to_MessageStack("흡혈체력의 양: " + UpHealth);
+		RIADebugger.AddMessage_to_MessageStack("흡혈체력의 양: " + UpHealth);
 		
 		double Maxhealth = RIAplayer.getPlayerMaxHealth();
 		if((health+UpHealth) > Maxhealth)
 		{
 			RIAplayer.setPlayerHealth(Maxhealth);
-			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 최대 채력을 넘으므로 최대 체력으로 회복: " + Maxhealth);
+			RIADebugger.AddMessage_to_MessageStack("흡혈 후 최대 채력을 넘으므로 최대 체력으로 회복: " + Maxhealth);
 		}
 		else if((health+UpHealth) < 0)
 		{
 			RIAplayer.setPlayerHealth(0.1);
-			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력이 0보다 낮으므로 0.1로 임시 지정: " + (health + UpHealth));
+			RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력이 0보다 낮으므로 0.1로 임시 지정: " + (health + UpHealth));
 		}
 		else
 		{
 			RIAplayer.setPlayerHealth(health + UpHealth);
-			//RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력: " + (health + UpHealth));
+			RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력: " + (health + UpHealth));
 		}
 	}
 }

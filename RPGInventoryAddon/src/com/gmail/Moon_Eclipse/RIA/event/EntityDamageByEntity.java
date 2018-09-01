@@ -1,5 +1,6 @@
 package com.gmail.Moon_Eclipse.RIA.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.gmail.Moon_Eclipse.RIA.Util.Damage_Caculator;
+import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 
 public class EntityDamageByEntity implements Listener 
 {
@@ -28,12 +30,14 @@ public class EntityDamageByEntity implements Listener
 		
 		// 데미지를 입히는 주체인 공격자를 얻어와 저장
 		Entity damager = event.getDamager();
-		
+				
 		// 만약 공격자가 투사체 라면
-		if(event.getCause().toString().equals("PROJECTILE"))
+		if(event.getCause().toString().equals("CUSTOM"))
 		{
 			// 투사체를 투척한 사람을 가져와 공격자를 재설정
-			damager = (Entity)((Projectile) damager).getShooter();
+			//damager = (Entity)((Projectile) damager).getShooter();
+			RIADebugger.AddMessage_to_MessageStack("원거리 공격이므로 RIA 데미지 계산 취소");
+			return;
 		}
 
 		// 만약 전투에 사람이 포함되어 있다면
