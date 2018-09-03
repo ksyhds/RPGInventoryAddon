@@ -5,6 +5,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.gmail.Moon_Eclipse.RIA.Link_Plugin.SkillApi.EventListener.SkillDamage;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
@@ -44,6 +45,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		AddEvent(new PlayerItemHeld());
 		AddEvent(new PlayerJoin());
 		AddEvent(new WrapperManager());
+		AddEvent(new SkillDamage());
 		
 		// 커맨드 클래스를 설정
 		getCommand("RIA").setExecutor(new Commands(this));
@@ -73,6 +75,9 @@ public class RPGInventoryAddon extends JavaPlugin
 		// RIAUtil.Attribute_Name을 configuration section을 통해 초기화
 		RIAUtil.setRIAAttributeList(c.getConfigurationSection("config.AttriuteList"));;
 		
+		// config 파일에 명시된 최대 체력 칸의 갯수를 받아와 저장
+		RIAStats.Slot_of_Health_Gauge = c.getInt("config.Slot_of_Health_Gauge");
+				
 		// config 파일에 명시된 총 스킬 공격력 이름을 받아와 저장
 		RIAStats.Total_Skill_Damage_Name  = c.getString("config.Total_Skill_Damage_Name");
 		
@@ -126,6 +131,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
+		
 	
 	}
 	public static RPGInventoryAddon getInstance()

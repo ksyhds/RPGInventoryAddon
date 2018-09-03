@@ -155,6 +155,9 @@ public class Damage_Caculator
 			
 	//--------------------데미지 설정 파트--------------------
 			
+			// 공격 속도에 의한 플레이어의 공격 쿨타임을 설정함
+			RIA_Damager.ApplyAttackCooldownTimeByValue(RIA_Damager_Stat_map.get(RIAStats.Attack_Speed_Name));
+			
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
 			RIADebugger.AddMessage_to_MessageStack("연산 마지막 데미지: " + New_Damage);
 			return New_Damage;
@@ -224,6 +227,9 @@ public class Damage_Caculator
 			
 	//--------------------데미지 설정 파트--------------------
 	
+			// 공격 속도에 의한 플레이어의 공격 쿨타임을 설정함
+			RIA_Damager.ApplyAttackCooldownTimeByValue(RIA_Damager_Stat_map.get(RIAStats.Attack_Speed_Name));
+						
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
 			RIADebugger.AddMessage_to_MessageStack("연산 마지막 데미지: " + New_Damage);
 			return New_Damage;

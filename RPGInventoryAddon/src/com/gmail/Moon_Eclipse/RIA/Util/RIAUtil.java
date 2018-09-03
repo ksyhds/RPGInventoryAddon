@@ -1,6 +1,7 @@
 package com.gmail.Moon_Eclipse.RIA.Util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class RIAUtil
 
 	public static Map<String, Double> AttributeMap = new HashMap<String, Double>();
 
-	public static void ResetAttributeMap()
+	public static Map<String, Double> ResetAttributeMap()
 	{
 		// 저장 공간을 모든 유저가 공유하는것을 방지하기위해 매 초기화마다 새로운 공간을 생성해 할당함.
 		AttributeMap = new HashMap<String, Double>();
@@ -43,6 +44,14 @@ public class RIAUtil
 		
 		// 치명타 피해의 계산을 위해 초기값을 설정
 		AttributeMap.put(RIAStats.Critical_Attack_Damage_Name, RIAStats.Default_Critical_Damage);
+		
+		// 플레이어 레벨을 기록해 두기 위해 맵을 사용
+		AttributeMap.put("RIA_Player_Level", 0d);
+		
+		// skillapi 플러그인의 스킬 공격이 CUSTUM, ENTITY_ATTACK 2개로 나타나므로 후자의 이벤트 발생을방지하기위해 플래그를 세움 0: 스킬사용 안함, 1: 스킬사용
+		AttributeMap.put("ENTITY_ATTACK_FLAG", 0d);
+		
+		return AttributeMap;
 	}
 	public static List<ItemStack> getActiveItemStackList(Player player)
 	{
@@ -79,7 +88,7 @@ public class RIAUtil
 		if(!Armors.isEmpty())
 		{
 			// 인벤토리의 장비목록을 통해 능력치 정보를 모은 맵을 얻어옴
-			Map<String,Double> AttributeMap = RIAUtil.ArmorDamataExtractor(Armors);
+			AttributeMap = RIAUtil.ArmorDamataExtractor(Armors);
 			RIADebugger.AddMessage_to_MessageStack("아머 데이터 추출 후 능력치: " + AttributeMap.toString());
 			
 			// 플레이어 레벨을 기록해 두기 위해 맵을 사용
@@ -101,7 +110,6 @@ public class RIAUtil
 			
 			// 장비의 스탯 정보를 갖고 있는 맵을 해당 플레이어 객체에 저장해둠. 차후에 데미지 연산 등에 쓰임.
 			rp.setAttributeMap(AttributeMap);
-
 		}
 		
 		// 플레이어의 이동 속도 설정
@@ -109,6 +117,12 @@ public class RIAUtil
 		
 		// 플레이어의 체력 설정
 		rp.setHitPointByAttributeMap();
+		
+		// 플레이어의 공격속도 설정
+		rp.ApplySLOW_DIGGINGByValue(AttributeMap.get(RIAStats.Attack_Speed_Name));
+		
+		// 플레이어 방어구의 방어력을 0으로 설정
+		rp.setPlayerArmorCoefficient(0);
 	}
 	// 손에 든 장비를 수정하는 장비 정보 수정자.
 	public static ItemStack DamageDataFixer(ItemStack item, Map<String, Double> map)
@@ -151,7 +165,7 @@ public class RIAUtil
 							double att_value = map.get(RIAStats.Skill_Attack_Damage_Name) + map.get(RIAStats.Base_Attack_Damage_Name) + map.get("RIA_Player_Level");
 							
 							// 새로운 최종 스킬 공격력 로어를 설정. 자리수를 설정한 float 값을 적용
-							String new_att = "§f" + RIAStats.Attribute_Lore_Identifier + " §e" + RIAStats.Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
+							String new_att = "§f" + RIAStats.Attribute_Lore_Identifier + " §5" + RIAStats.Total_Skill_Damage_Name + ": §d" + String.format("%.1f" , att_value);;
 							
 							// 새로운 로어에 새로 만든 최종 스킬 공격력을 추가
 							New_Lore.add(new_att);
@@ -238,8 +252,11 @@ public class RIAUtil
 			}
 		}
 		
-		// 주 무기 를 추가
-		re.add(HandItem);
+		// 주 무기가 무기일 경우만 추가
+		if(IsThisWeapon(HandItem))
+		{
+			re.add(HandItem);
+		}		
 		
 		// 마지막에 보조무기 추가
 		re.add(OffHandItem);
@@ -270,6 +287,7 @@ public class RIAUtil
 						//로어의 모든 색 코드를 제거
 						lore = ChatColor.stripColor(lore);
 						
+						
 						// 만약 로어가 공격 속도라면
 						if(lore.contains(RIAStats.Attack_Speed_Name))
 						{
@@ -288,9 +306,8 @@ public class RIAUtil
 							// 빠른 정도를 숫자로 변환함
 							lore = Speed[0] + ": " + target;
 							
-							RIADebugger.AddMessage_to_MessageStack(lore);
-							
 						}
+						
 						// 만약 스탯 구분자가 있는 로어라면
 						if(lore.contains(RIAStats.Attribute_Lore_Identifier))
 						{
@@ -388,4 +405,30 @@ public class RIAUtil
 		//Bukkit.broadcastMessage("CanPlayerActivateCriticalDamage return: " + re);
 		return re;
 	}
+	// 쿨타임이 완료된 시간을 얻어옴
+	public static long getCooledTime(double CoolTime_MilliSecond)
+	{
+		return (long) (new Date().getTime() + CoolTime_MilliSecond * 1000.0D);
+	}
+	public static boolean IsThisWeapon(ItemStack target)
+	{
+		
+		Material Target_Material = target.getType();
+		
+		if(
+				Target_Material.equals(Material.IRON_AXE) ||
+				Target_Material.equals(Material.IRON_PICKAXE) ||
+				Target_Material.equals(Material.IRON_HOE) ||
+				Target_Material.equals(Material.IRON_SWORD)
+				
+				)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 }

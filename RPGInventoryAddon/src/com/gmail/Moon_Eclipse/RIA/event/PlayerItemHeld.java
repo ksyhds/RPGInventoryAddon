@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
@@ -28,7 +29,6 @@ public class PlayerItemHeld implements Listener
 		
 		// 플레이어의 스탯 맵과 손에든 아이템 갱신
 		RIAUtil.SetPlayerDataAndStat(player, event.getNewSlot());
-		
 		
 	}
 }

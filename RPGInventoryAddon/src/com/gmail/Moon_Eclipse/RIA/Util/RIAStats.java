@@ -5,6 +5,8 @@ import java.util.List;
 
 public class RIAStats 
 {
+	public static int Slot_of_Health_Gauge = 0;
+	
 	public static double Default_Health_Point = 0d;
 	
 	public static double Default_Walk_Speed = 0d;

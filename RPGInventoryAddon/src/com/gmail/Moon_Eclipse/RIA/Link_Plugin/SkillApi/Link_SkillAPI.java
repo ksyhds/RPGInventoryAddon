@@ -1,4 +1,4 @@
-package com.gmail.Moon_Eclipse.RIA.Link_Plugin;
+package com.gmail.Moon_Eclipse.RIA.Link_Plugin.SkillApi;
 
 import org.bukkit.entity.Player;
 

@@ -24,8 +24,7 @@ public class PlayerJoin implements Listener
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event)
-	{
-				
+	{	
 		// 플레이어가 서버에 접속했을때 발생하는 이벤트
 		
 		// 이벤트를 발생시킨 플레이어의 정보를 받아옴
