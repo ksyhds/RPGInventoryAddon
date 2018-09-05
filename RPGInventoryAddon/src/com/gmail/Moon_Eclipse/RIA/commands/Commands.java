@@ -1,6 +1,8 @@
 package com.gmail.Moon_Eclipse.RIA.commands;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.Moon_eclipse.EclipseLib.LibMain;
 import com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon;
 import com.gmail.Moon_Eclipse.RIA.Link_Plugin.SkillApi.Link_SkillAPI;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
@@ -47,27 +50,41 @@ public class Commands implements CommandExecutor
 					sender.sendMessage("/RIA inv - 자신의 RPG인벤토리 내용을 출력");
 					sender.sendMessage("/RIA get - 가장 마지막 행동의 디버그 로그 송출");
 					sender.sendMessage("/RIA map player - 플레이어의 스탯 맵을 확인");
-					sender.sendMessage("/RIA spd 값- 플레이어의 공격 속도 조절");
-					sender.sendMessage("/RIA spd2 값- 플레이어에게 구속 효과 사용");
+					sender.sendMessage("/RIA armor- 플레이어에게 구속 효과 사용");
+					sender.sendMessage("/RIA spd 값- 플레이어에게 구속 효과 사용");
+					sender.sendMessage("/RIA copy- 손에 든 아이템의 속성을 지웁니다");
 				}
 			}
 			if(args.length >= 1)
 			{
 				switch(args[0])
 				{
-					case "spd":
-						sender.sendMessage("공격 속도 설정: " + args[1]);
+					case "copy":
+						
+					{
+						Player player = (Player) sender;
+						
+						ItemStack item = player.getEquipment().getItemInMainHand();
+						
+						item = LibMain.hideFlags_Unbreak(item);
+						
+						player.getEquipment().setItemInMainHand(item);
+						
+					}
+					break;
+					case "armor":
 						{
 							Player player = (Player) sender;
-						
-							double speed = Double.parseDouble(args[1]);
 							
-							WrapperManager.getRIAPlayer(player.getName()).setAttackSpeed(speed);
+							RIAPlayer rp = WrapperManager.getRIAPlayer(player.getName());	
 							
+							sender.sendMessage("아머 계수: " + rp.getPlayerArmorCoefficient());
 						}
+						
+						
 					break;
 					
-					case "spd2":
+					case "spd":
 						sender.sendMessage("구속 레벨 설정: " + args[1]);
 						{
 							Player player = (Player) sender;
@@ -76,7 +93,7 @@ public class Commands implements CommandExecutor
 							
 							int level = Integer.parseInt(args[1]) - 1;
 							
-							PotionEffect ef = new PotionEffect(PotionEffectType.SLOW_DIGGING, 99999, level);
+							PotionEffect ef = new PotionEffect(PotionEffectType.CONDUIT_POWER, 99999, level);
 							
 							rp.ApplyPotionEffect(ef);
 						}
@@ -126,7 +143,16 @@ public class Commands implements CommandExecutor
 						RIADebugger.initialize_MessageStack();
 					break;
 					case "map":
-						sender.sendMessage(WrapperManager.getRIAPlayer(args[1]).getAttributeMap().toString());
+						Map<String, Double> attmap = WrapperManager.getRIAPlayer(args[1]).getAttributeMap();
+						Set<String> keyset = attmap.keySet();
+						for(String key : keyset)
+						{
+							Double attvalue = attmap.get(key);
+							if(attvalue != 0.0d)
+							{
+								sender.sendMessage(key + ": " + attvalue);
+							}
+						}
 					break;
 				}
 			}

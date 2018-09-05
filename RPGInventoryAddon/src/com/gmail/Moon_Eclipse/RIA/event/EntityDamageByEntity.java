@@ -84,10 +84,7 @@ public class EntityDamageByEntity implements Listener
 			
 			// 만약 공격 속도에 의해 설정된 쿨타임이 아직 지나지 않았다면
 			long date_value = new Date().getTime();
-			Bukkit.broadcastMessage("date_value: " + date_value);
-			
 			long Cooled_time = rp.getCooledTime();
-			Bukkit.broadcastMessage("Cooled_time: " + Cooled_time);
 			
 			if(Cooled_time > date_value)
 			{

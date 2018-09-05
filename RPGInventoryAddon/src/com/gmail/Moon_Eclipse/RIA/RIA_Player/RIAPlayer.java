@@ -28,7 +28,10 @@ public class RIAPlayer
 	
 	public static Map<String, Double> AttributeMap;
 	
+	public static Map<String, String> PotionEffectMap;
+
 	public Timestamp Time_Stamp;
+	
 
 	// 생성자를 생성해서 기본 변수를 초기화.
 	public RIAPlayer(Player p)
@@ -176,8 +179,6 @@ public class RIAPlayer
 	{
 		AttributeInstance AttackSpeeds = MineCraftPlayer.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
 		
-		
-		
 		AttackSpeeds.setBaseValue(AttackSpeeds.getDefaultValue());
 		
 	}
@@ -308,7 +309,17 @@ public class RIAPlayer
 	}
 	public void setPlayerArmorCoefficient(double value)
 	{
-		AttributeInstance ArmorAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_ARMOR);
+		AttributeInstance ArmorAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
 		ArmorAttribute.setBaseValue(value);
+		
+		AttributeInstance ArmorAttribute2 = MineCraftPlayer.getAttribute(Attribute.GENERIC_ARMOR);
+		ArmorAttribute2.setBaseValue(value);
+	}
+	public double getPlayerArmorCoefficient()
+	{
+		AttributeInstance ArmorAttribute = MineCraftPlayer.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+		return ArmorAttribute.getBaseValue();
+		
+		
 	}
 }

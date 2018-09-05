@@ -8,6 +8,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
@@ -153,6 +155,13 @@ public class Damage_Caculator
 			// 생명력 흡수를 플레이어에게 적용함.
 			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
 			
+			// 포션 이펙트를 피격자에게 적용함
+			ApplyDeBuffPotionEffect(RIA_Damager_Stat_map, player_target);
+			
+			// 포션 이펙트를 공격자에게 적용함
+			ApplyDeBuffPotionEffect(RIA_Target_Stat_map, player_damager);
+			
+			
 	//--------------------데미지 설정 파트--------------------
 			
 			// 공격 속도에 의한 플레이어의 공격 쿨타임을 설정함
@@ -225,6 +234,9 @@ public class Damage_Caculator
 			// 생명력 흡수를 플레이어에게 적용함.
 			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
 			
+			// 포션 이펙트를 피격자 에게 적용함
+			ApplyBuffPotionEffect(RIA_Damager_Stat_map, monster_target);
+			
 	//--------------------데미지 설정 파트--------------------
 	
 			// 공격 속도에 의한 플레이어의 공격 쿨타임을 설정함
@@ -265,6 +277,10 @@ public class Damage_Caculator
 			// 지정된 값만큼 데미지를 감소시킴
 			New_Damage -= Target_Reduce_Damage;
 	//--------------------데미지 기타 파트--------------------
+			
+			// 포션 이펙트를 공격자에게 적용함
+			ApplyDeBuffPotionEffect(RIA_Target_Stat_map, monster_damager);
+			
 	//--------------------데미지 설정 파트--------------------
 	
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
@@ -314,6 +330,96 @@ public class Damage_Caculator
 		{
 			RIAplayer.setPlayerHealth(health + UpHealth);
 			RIADebugger.AddMessage_to_MessageStack("흡혈 후 체력: " + (health + UpHealth));
+		}
+	}
+	public static void ApplyBuffPotionEffect(Map<String,Double> RIA_Damager_Stat_map, LivingEntity target)
+	{
+		// 포션 이펙트를 피격자 에게 적용함
+		
+		// 포션 이펙트 이름을 하나씩 불러와 사용하기위해 반복문 사용
+		for(String Effect_Name : RIAStats.Buff_Potion_Names)
+		{
+			// 저장되어있는 포션 이펙트의 레벨을 얻어옴
+			double Effect_Level = RIA_Damager_Stat_map.get(Effect_Name + "_LEVEL");
+			
+			// 만약 레벨이 0이 아니라면, 즉 맵에 처리할 포션 값이 있다면
+			if(Effect_Level != 0)
+			{
+				// 이펙트 발동 확률을 정의
+				double Effect_Percent = RIA_Damager_Stat_map.get(Effect_Name + "_Per");
+				
+				// 크리티컬이나 이펙트나 발동 가능 여부의 계산은 똑같으므로 아래 메소드를 사용
+				boolean Can_Apply_Effect = RIAUtil.CanPlayerActivateCriticalDamage(Effect_Percent);
+				
+				// 만약 퍼센트 조건을 만족 했다면
+				if(Can_Apply_Effect)
+				{
+					// 지속 시간을 정의
+					double Effect_Second = RIA_Damager_Stat_map.get(Effect_Name + "_Second"); 
+					
+					// 이름으로부터 이펙트 타입을 받아옴
+					PotionEffectType EffectType = RIAUtil.getPotionEffectTypeFromString(Effect_Name);
+					
+					// 이펙트 타입, 레벨, 지속시간을 이용해 이펙트를 만듦
+					PotionEffect Effect = new PotionEffect(EffectType, (int) Effect_Second, (int) Effect_Level);
+					
+					// 피격자에게 이펙트 적용
+					target.addPotionEffect(Effect);
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
+	}
+	public static void ApplyDeBuffPotionEffect(Map<String,Double> RIA_Damager_Stat_map, LivingEntity target)
+	{
+		// 포션 이펙트를 피격자 에게 적용함
+		
+		// 포션 이펙트 이름을 하나씩 불러와 사용하기위해 반복문 사용
+		for(String Effect_Name : RIAStats.DeBuff_Potion_Names)
+		{
+			// 저장되어있는 포션 이펙트의 레벨을 얻어옴
+			double Effect_Level = RIA_Damager_Stat_map.get(Effect_Name + "_LEVEL");
+			
+			// 만약 레벨이 0이 아니라면, 즉 맵에 처리할 포션 값이 있다면
+			if(Effect_Level != 0)
+			{
+				// 이펙트 발동 확률을 정의
+				double Effect_Percent = RIA_Damager_Stat_map.get(Effect_Name + "_Per");
+				
+				// 크리티컬이나 이펙트나 발동 가능 여부의 계산은 똑같으므로 아래 메소드를 사용
+				boolean Can_Apply_Effect = RIAUtil.CanPlayerActivateCriticalDamage(Effect_Percent);
+				
+				// 만약 퍼센트 조건을 만족 했다면
+				if(Can_Apply_Effect)
+				{
+					// 지속 시간을 정의
+					double Effect_Second = RIA_Damager_Stat_map.get(Effect_Name + "_Second"); 
+					
+					// 이름으로부터 이펙트 타입을 받아옴
+					PotionEffectType EffectType = RIAUtil.getPotionEffectTypeFromString(Effect_Name);
+					
+					// 이펙트 타입, 레벨, 지속시간을 이용해 이펙트를 만듦
+					PotionEffect Effect = new PotionEffect(EffectType, (int) Effect_Second, (int) Effect_Level);
+					
+					// 피격자에게 이펙트 적용
+					target.addPotionEffect(Effect);
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
 		}
 	}
 }

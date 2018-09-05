@@ -46,6 +46,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		AddEvent(new PlayerJoin());
 		AddEvent(new WrapperManager());
 		AddEvent(new SkillDamage());
+		AddEvent(new EntityDamage());
 		
 		// 커맨드 클래스를 설정
 		getCommand("RIA").setExecutor(new Commands(this));
@@ -131,6 +132,9 @@ public class RPGInventoryAddon extends JavaPlugin
 		
 		// util의 능력치 맵을 초기화
 		RIAUtil.ResetAttributeMap();
+		
+		// stats의 포션 이펙트 이름을 초기화
+		RIAStats.initialize_PotionEffect_Names();
 		
 	
 	}

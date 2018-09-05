@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffectType;
 
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
@@ -50,7 +51,15 @@ public class RIAUtil
 		
 		// skillapi 플러그인의 스킬 공격이 CUSTUM, ENTITY_ATTACK 2개로 나타나므로 후자의 이벤트 발생을방지하기위해 플래그를 세움 0: 스킬사용 안함, 1: 스킬사용
 		AttributeMap.put("ENTITY_ATTACK_FLAG", 0d);
-		
+				
+		// 포션이펙트의 각 값을 기록
+		for(String string : RIAStats.PotionEffect_Names)
+		{
+			AttributeMap.put(string + "_LEVEL",0d);
+			AttributeMap.put(string + "_Second",0d);
+			AttributeMap.put(string + "_Per",0d);
+		}
+	
 		return AttributeMap;
 	}
 	public static List<ItemStack> getActiveItemStackList(Player player)
@@ -122,7 +131,7 @@ public class RIAUtil
 		rp.ApplySLOW_DIGGINGByValue(AttributeMap.get(RIAStats.Attack_Speed_Name));
 		
 		// 플레이어 방어구의 방어력을 0으로 설정
-		rp.setPlayerArmorCoefficient(0);
+		//rp.setPlayerArmorCoefficient(0d);
 	}
 	// 손에 든 장비를 수정하는 장비 정보 수정자.
 	public static ItemStack DamageDataFixer(ItemStack item, Map<String, Double> map)
@@ -207,6 +216,11 @@ public class RIAUtil
 		// 손에 들고있는 아이템을 얻어와서 저장
 		ItemStack HandItem = player.getInventory().getItem(New_Slot);
 		
+		// 아이템이 없는경우 아이템을 빈 아이템으로 지정
+		if(HandItem == null || HandItem.equals(Material.AIR))
+		{
+			HandItem = new ItemStack(Material.AIR);
+		}
 		//  보조무기를 추가하기위해 보조무기 저장
 		ItemStack OffHandItem = player.getEquipment().getItemInOffHand();
 		
@@ -311,6 +325,65 @@ public class RIAUtil
 						// 만약 스탯 구분자가 있는 로어라면
 						if(lore.contains(RIAStats.Attribute_Lore_Identifier))
 						{
+							// 만약 로어가 포션 이펙트 계열 로어라면 연산하고 다음 반복 항목으로 포워딩
+							if(lore.contains("대상에게"))
+							{
+								//* 대상에게 중독: 2단계 3초간 75.0%		
+								
+								// 포션 이펙트 로어를 스플리터를 통해 나눔 -> "대상에게 중독,2단계 3초간 75.0"
+								String[] splited_lore = Splitter(lore);
+								
+								// 포션 이펙트 이름을 얻어옴
+								String Effect_Name = splited_lore[0].replaceAll("대상에게 ", "");
+								
+								// 공백을 기준으로 각 포션이펙트 부속 항목들을 나눔
+								String[] Effect_Atts = splited_lore[1].split(" ");
+								
+								// 레벨을 얻어옴
+								String Effect_Level_String = Effect_Atts[0].replaceAll("단계", "");
+								
+								// 지속 시간을 얻어옴
+								String Effect_Second_String = Effect_Atts[1].replaceAll("초간", "");
+								
+								// 발동 확률을 얻어옴
+								String Effect_Percent_String = Effect_Atts[2];
+								
+								// 이펙트 레벨을 변환
+								double Effect_Level = Double.parseDouble(Effect_Level_String);
+								
+								// 이펙트 지속 시간을 변환
+								double Effect_Second = Double.parseDouble(Effect_Second_String);
+								
+								// 이펙트 발동 확률을 변환
+								double Effect_Percent = Double.parseDouble(Effect_Percent_String);	
+									
+								// 저장되어있던 이펙트 레벨을 불러옴
+								double Prev_Effect_Level = AttributeMap.get(Effect_Name + "_LEVEL");
+								
+								// 저장되어 있던 이펙트 확률을 부러옴
+								double Prev_Effect_Percent = AttributeMap.get(Effect_Name + "_Per");
+								
+								// 만약 새로 쓸 이펙트의 레벨이 이전 이펙트의 레벨보다 크다면
+								if(Effect_Level > Prev_Effect_Level)
+								{
+									// 맵에 이펙트 기록
+									AttributeMap.put(Effect_Name + "_LEVEL",Effect_Level);
+									AttributeMap.put(Effect_Name + "_Second",Effect_Second);
+									AttributeMap.put(Effect_Name + "_Per",Effect_Percent);
+								}
+								// 만일 레벨이 같고
+								else if(Effect_Level == Prev_Effect_Level)
+								{
+									// 퍼센트가 크다면
+									if(Effect_Percent > Prev_Effect_Percent)
+									{
+										// 레벨은 그대로 두고 시간과 퍼센트를 덮어씀
+										AttributeMap.put(Effect_Name + "_Second",Effect_Second);
+										AttributeMap.put(Effect_Name + "_Per",Effect_Percent);
+									}
+								}
+								continue;
+							}
 							// 구분자를 통해서 스탯 이름과 스탯 값을 구분 받음.
 							String[] args = Splitter(lore);
 							
@@ -429,6 +502,113 @@ public class RIAUtil
 		{
 			return false;
 		}
+	}
+	public static PotionEffectType getPotionEffectTypeFromString(String EffectName)
+	{
+		switch(EffectName)
+		{
+			/*
+			 * -> 상태이상
+			 * 			
+			 * 화상			51 , 52 - 53
+			 * 빙결			54 , 55 - 56 -> 구속
+			 * 중독			57 , 58 - 59
+			 * 위더	 		60 , 61 - 62
+			 * 실명 			63 , 64 - 65
+			 * 영혼 약탈 		66 , 67 - 68 -> 즉시 데미지
+			 */
+				
+			case "신속": case "0":
+				return PotionEffectType.SPEED;
+				
+			case "구속": case "1":
+				return PotionEffectType.SLOW;
+				
+			case "성급함": case "2":
+				return PotionEffectType.FAST_DIGGING;
+				
+			case "피로": case "3":
+				return PotionEffectType.SLOW_DIGGING;
+				
+			case "힘": case "4":
+				return PotionEffectType.INCREASE_DAMAGE;
+				
+			case "즉시 회복": case "5":
+				return PotionEffectType.HEAL;
+				
+			case "즉시 데미지": case "6":
+				return PotionEffectType.HARM;
+				
+			case "점프 강화": case "7":
+				return PotionEffectType.JUMP;
+				
+			case "멀미": case "8":
+				return PotionEffectType.CONFUSION;
+				
+			case "재생": case "9":
+				return PotionEffectType.REGENERATION;
+				
+			case "저항": case "10":
+				return PotionEffectType.DAMAGE_RESISTANCE;
+				
+			case "화염 저항": case "11":
+				return PotionEffectType.FIRE_RESISTANCE;
+				
+			case "수중 호흡": case "12":
+				return PotionEffectType.WATER_BREATHING;
+				
+			case "투명화": case "13":
+				return PotionEffectType.INVISIBILITY;
+				
+			case "실명": case "14":
+				return PotionEffectType.BLINDNESS;
+				
+			case "야간 투시": case "15":
+				return PotionEffectType.NIGHT_VISION;
+				
+			case "허기": case "16":
+				return PotionEffectType.HUNGER;
+				
+			case "나약함": case "17":
+				return PotionEffectType.WEAKNESS;
+				
+			case "중독": case "18":
+				return PotionEffectType.POISON;
+				
+			case "위더": case "19":
+				return PotionEffectType.WITHER;
+				
+			case "체력 증진": case "20":
+				return PotionEffectType.HEALTH_BOOST;
+				
+			case "흡수": case "21":
+				return PotionEffectType.ABSORPTION;
+				
+			case "포화": case "22":
+				return PotionEffectType.SATURATION;
+				
+			case "발광": case "23":
+				return PotionEffectType.GLOWING;
+				
+			case "공중부양": case "24":
+				return PotionEffectType.LEVITATION;
+				
+			case "느린 낙하": case "25":
+				return PotionEffectType.SLOW_FALLING;
+				
+			case "행운": case "26":
+				return PotionEffectType.LUCK;
+				
+			case "불운": case "27":
+				return PotionEffectType.UNLUCK;
+				
+			case "전달체의 힘": case "28":
+				return PotionEffectType.DOLPHINS_GRACE;
+				
+			case "돌고래의 축복": case "29":
+				return PotionEffectType.DOLPHINS_GRACE;
+		}	
+		return PotionEffectType.SPEED;
 	}
 	
 }
