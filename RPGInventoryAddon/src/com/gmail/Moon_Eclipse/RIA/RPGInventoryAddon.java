@@ -11,7 +11,7 @@ import com.gmail.Moon_Eclipse.RIA.Util.RIADebugger;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAStats;
 import com.gmail.Moon_Eclipse.RIA.Util.RIAUtil;
 import com.gmail.Moon_Eclipse.RIA.commands.Commands;
-import com.gmail.Moon_Eclipse.RIA.event.*;
+import com.gmail.Moon_Eclipse.RIA.event_listener.*;
 
 
 public class RPGInventoryAddon extends JavaPlugin
@@ -47,6 +47,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		AddEvent(new WrapperManager());
 		AddEvent(new SkillDamage());
 		AddEvent(new EntityDamage());
+		AddEvent(new InventoryClick());
 		
 		// 커맨드 클래스를 설정
 		getCommand("RIA").setExecutor(new Commands(this));
@@ -135,6 +136,9 @@ public class RPGInventoryAddon extends JavaPlugin
 		
 		// stats의 포션 이펙트 이름을 초기화
 		RIAStats.initialize_PotionEffect_Names();
+		
+		// 각종 디버그 메세지를 담을 리스트를 초기화함
+		RIADebugger.initialize_MessageStack();
 		
 	
 	}

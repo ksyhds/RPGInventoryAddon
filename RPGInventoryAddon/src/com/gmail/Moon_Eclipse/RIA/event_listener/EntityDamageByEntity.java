@@ -1,4 +1,4 @@
-package com.gmail.Moon_Eclipse.RIA.event;
+package com.gmail.Moon_Eclipse.RIA.event_listener;
 
 import java.util.Date;
 import java.util.Map;
@@ -14,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.gmail.Moon_Eclipse.RIA.RPGInventoryAddon;
 import com.gmail.Moon_Eclipse.RIA.RIA_Player.RIAPlayer;
@@ -40,7 +42,6 @@ public class EntityDamageByEntity implements Listener
 		
 		// 데미지를 입히는 주체인 공격자를 얻어와 저장
 		Entity damager = event.getDamager();
-				
 		
 		//Bukkit.broadcastMessage("이벤트 타입: " + event.getCause());
 		

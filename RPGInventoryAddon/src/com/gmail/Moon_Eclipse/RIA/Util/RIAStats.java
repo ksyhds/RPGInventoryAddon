@@ -53,13 +53,46 @@ public class RIAStats
 	
 	public static void initialize_PotionEffect_Names()
 	{
+		
+		/*
+	      신속  - 자신
+	      구속  - 대상
+	      성급함  - 자신
+	      피로  - 대상
+	      힘  - 자신
+	      즉시 회복  - 자신
+	      즉시 데미지  - 대상  => 혈독
+	      점프 강화  - 자신
+	      멀미  - 대상
+	      재생  - 자신
+	      저항  - 자신
+	      화염 저항  - 자신
+	      수중 호흡  - 자신
+	      투명화  - 자신
+	      실명  - 대상
+	      야간 투시  - 자신
+	      허기  - 대상
+	      나약함  - 대상
+	      중독  - 대상
+	      위더  - 대상
+	      체력 증진  - 자신
+	      흡수  - 자신
+	      포화  - 자신
+	      발광  - 대상
+	      공중부양  - 대상
+	      느린 낙하  - 자신
+	      행운  - 자신
+	      불운  - 대상
+	      전달체의 힘  - 자신
+	      돌고래의 축복  - 자신
+		 */
 		PotionEffect_Names.add("신속");
 		PotionEffect_Names.add("구속");
 		PotionEffect_Names.add("성급함");
 		PotionEffect_Names.add("피로");
 		PotionEffect_Names.add("힘");
 		PotionEffect_Names.add("즉시 회복");
-		PotionEffect_Names.add("즉시 데미지");
+		PotionEffect_Names.add("혈독");
 		PotionEffect_Names.add("점프 강화");
 		PotionEffect_Names.add("멀미");
 		PotionEffect_Names.add("재생");
@@ -103,8 +136,6 @@ public class RIAStats
 		Buff_Potion_Names.add("체력 증진");
 		Buff_Potion_Names.add("흡수");
 		Buff_Potion_Names.add("포화");
-		Buff_Potion_Names.add("발광");
-		Buff_Potion_Names.add("공중부양");
 		Buff_Potion_Names.add("느린 낙하");
 		Buff_Potion_Names.add("행운");
 		Buff_Potion_Names.add("전달체의 힘");
@@ -114,13 +145,15 @@ public class RIAStats
 	{
 		DeBuff_Potion_Names.add("구속");
 		DeBuff_Potion_Names.add("피로");
-		DeBuff_Potion_Names.add("즉시 데미지");
+		DeBuff_Potion_Names.add("혈독");
 		DeBuff_Potion_Names.add("멀미");
 		DeBuff_Potion_Names.add("실명");
 		DeBuff_Potion_Names.add("허기");
 		DeBuff_Potion_Names.add("나약함");
 		DeBuff_Potion_Names.add("중독");
 		DeBuff_Potion_Names.add("위더");
+		DeBuff_Potion_Names.add("발광");
+		DeBuff_Potion_Names.add("공중부양");
 		DeBuff_Potion_Names.add("불운");
 	}
 }

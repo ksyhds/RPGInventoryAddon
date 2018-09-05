@@ -155,11 +155,11 @@ public class Damage_Caculator
 			// 생명력 흡수를 플레이어에게 적용함.
 			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
 			
-			// 포션 이펙트를 피격자에게 적용함
+			// 포션 이펙트를 피격자에게 적용함(대상에게 이펙트)
 			ApplyDeBuffPotionEffect(RIA_Damager_Stat_map, player_target);
 			
-			// 포션 이펙트를 공격자에게 적용함
-			ApplyDeBuffPotionEffect(RIA_Target_Stat_map, player_damager);
+			// 포션 이펙트를 공격자에게 적용함(자신에게 이펙트)
+			ApplyBuffPotionEffect(RIA_Damager_Stat_map, player_damager);
 			
 			
 	//--------------------데미지 설정 파트--------------------
@@ -167,8 +167,10 @@ public class Damage_Caculator
 			// 공격 속도에 의한 플레이어의 공격 쿨타임을 설정함
 			RIA_Damager.ApplyAttackCooldownTimeByValue(RIA_Damager_Stat_map.get(RIAStats.Attack_Speed_Name));
 			
+			
 			// 데미지의 가감이 끝났기 때문에 이벤트의 데미지를 반환함.
 			RIADebugger.AddMessage_to_MessageStack("연산 마지막 데미지: " + New_Damage);
+			
 			return New_Damage;
 		}
 		// 플레이어가 몬스터를 가격할 경우
@@ -178,6 +180,7 @@ public class Damage_Caculator
 			double New_Damage = Event_Damage;
 						
 			Player player_damager = (Player)damager;
+			
 			LivingEntity monster_target = (LivingEntity)target;
 			
 			// 공격자의 RIA 정보를 얻어옴
@@ -235,7 +238,10 @@ public class Damage_Caculator
 			BloodSuck(RIA_Damager, Damager_Absorption_Health, New_Damage);
 			
 			// 포션 이펙트를 피격자 에게 적용함
-			ApplyBuffPotionEffect(RIA_Damager_Stat_map, monster_target);
+			ApplyDeBuffPotionEffect(RIA_Damager_Stat_map, monster_target);
+			
+			// 포션 이펙트를 공격자에게 적용함(자신에게 이펙트)
+			ApplyBuffPotionEffect(RIA_Damager_Stat_map, player_damager);
 			
 	//--------------------데미지 설정 파트--------------------
 	
@@ -254,8 +260,9 @@ public class Damage_Caculator
 			double New_Damage = Event_Damage;
 			
 			LivingEntity monster_damager = (LivingEntity)damager;
-			Player player_target = (Player)target;
 			
+			Player player_target = (Player)target;
+						
 			// 피격자의 RIA 정보를 얻어옴
 			RIAPlayer RIA_Target = WrapperManager.getRIAPlayer(player_target.getName());
 			
@@ -279,7 +286,7 @@ public class Damage_Caculator
 	//--------------------데미지 기타 파트--------------------
 			
 			// 포션 이펙트를 공격자에게 적용함
-			ApplyDeBuffPotionEffect(RIA_Target_Stat_map, monster_damager);
+			// ApplyDeBuffPotionEffect(RIA_Target_Stat_map, monster_damager);
 			
 	//--------------------데미지 설정 파트--------------------
 	
@@ -364,7 +371,7 @@ public class Damage_Caculator
 					PotionEffect Effect = new PotionEffect(EffectType, (int) Effect_Second, (int) Effect_Level);
 					
 					// 피격자에게 이펙트 적용
-					target.addPotionEffect(Effect);
+					target.addPotionEffect(Effect,true);
 				}
 				else
 				{
@@ -390,25 +397,33 @@ public class Damage_Caculator
 			// 만약 레벨이 0이 아니라면, 즉 맵에 처리할 포션 값이 있다면
 			if(Effect_Level != 0)
 			{
+				RIADebugger.AddMessage_to_MessageStack("포션 타겟 타입: " + target.getType());
+				RIADebugger.AddMessage_to_MessageStack("Effect_Name: " + Effect_Name);
+				RIADebugger.AddMessage_to_MessageStack("Effect_Level: " + Effect_Level);
 				// 이펙트 발동 확률을 정의
 				double Effect_Percent = RIA_Damager_Stat_map.get(Effect_Name + "_Per");
+				RIADebugger.AddMessage_to_MessageStack("Effect_Percent: " + Effect_Percent);
 				
 				// 크리티컬이나 이펙트나 발동 가능 여부의 계산은 똑같으므로 아래 메소드를 사용
 				boolean Can_Apply_Effect = RIAUtil.CanPlayerActivateCriticalDamage(Effect_Percent);
+				RIADebugger.AddMessage_to_MessageStack("Can_Apply_Effect: " + Can_Apply_Effect);
 				
 				// 만약 퍼센트 조건을 만족 했다면
 				if(Can_Apply_Effect)
 				{
 					// 지속 시간을 정의
-					double Effect_Second = RIA_Damager_Stat_map.get(Effect_Name + "_Second"); 
+					double Effect_Second = RIA_Damager_Stat_map.get(Effect_Name + "_Second") * 20; 
+					RIADebugger.AddMessage_to_MessageStack("Effect_Second: " + Effect_Second);
 					
 					// 이름으로부터 이펙트 타입을 받아옴
 					PotionEffectType EffectType = RIAUtil.getPotionEffectTypeFromString(Effect_Name);
+					RIADebugger.AddMessage_to_MessageStack("EffectType: " + EffectType.getName());
 					
 					// 이펙트 타입, 레벨, 지속시간을 이용해 이펙트를 만듦
-					PotionEffect Effect = new PotionEffect(EffectType, (int) Effect_Second, (int) Effect_Level);
+					PotionEffect Effect = new PotionEffect(EffectType, (int) Effect_Second, (int) Effect_Level - 1);
+					RIADebugger.AddMessage_to_MessageStack("Effect: " + Effect.toString());
 					
-					// 피격자에게 이펙트 적용
+					// 대상에게 이펙트 적용
 					target.addPotionEffect(Effect);
 				}
 				else

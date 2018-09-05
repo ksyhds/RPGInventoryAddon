@@ -61,10 +61,19 @@ public class RIADebugger
 		
 		// 시간을 형태에 맞게 추가
 		RIADebugger.AddMessage_to_MessageStack("일시: " + date.format(today));
+		
+		if(!DebugMod)
+		{
+			MessageStack.add("디버그 모드를 활성화 해주세요");
+		}
 	}
 	public static void AddMessage_to_MessageStack(String message) 
 	{
-		MessageStack.add(message);
+		if(DebugMod)
+		{
+			MessageStack.add(message);
+		}
+		
 	}
 	public static void SendStackedDebugMessage_Console() 
 	{

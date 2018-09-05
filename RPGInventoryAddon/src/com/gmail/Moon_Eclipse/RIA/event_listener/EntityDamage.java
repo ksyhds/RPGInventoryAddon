@@ -1,4 +1,4 @@
-package com.gmail.Moon_Eclipse.RIA.event;
+package com.gmail.Moon_Eclipse.RIA.event_listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;

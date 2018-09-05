@@ -47,6 +47,7 @@ public class Commands implements CommandExecutor
 				if(sender.isOp())
 				{
 					sender.sendMessage("/RIA reload - 리로드");
+					sender.sendMessage("RIA debug - 디버그 모드 on/off");
 					sender.sendMessage("/RIA inv - 자신의 RPG인벤토리 내용을 출력");
 					sender.sendMessage("/RIA get - 가장 마지막 행동의 디버그 로그 송출");
 					sender.sendMessage("/RIA map player - 플레이어의 스탯 맵을 확인");
@@ -59,6 +60,11 @@ public class Commands implements CommandExecutor
 			{
 				switch(args[0])
 				{
+					case "debug":
+							RIADebugger.DebugMod = !RIADebugger.DebugMod;
+							sender.sendMessage("디버그 모드: " + RIADebugger.DebugMod);
+						
+					break;
 					case "copy":
 						
 					{

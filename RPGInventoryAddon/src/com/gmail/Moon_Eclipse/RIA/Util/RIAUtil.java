@@ -328,7 +328,7 @@ public class RIAUtil
 							// 만약 로어가 포션 이펙트 계열 로어라면 연산하고 다음 반복 항목으로 포워딩
 							if(lore.contains("대상에게"))
 							{
-								//* 대상에게 중독: 2단계 3초간 75.0%		
+								//* 대상에게 중독: 3초간 2단계 75.0%		
 								
 								// 포션 이펙트 로어를 스플리터를 통해 나눔 -> "대상에게 중독,2단계 3초간 75.0"
 								String[] splited_lore = Splitter(lore);
@@ -340,10 +340,10 @@ public class RIAUtil
 								String[] Effect_Atts = splited_lore[1].split(" ");
 								
 								// 레벨을 얻어옴
-								String Effect_Level_String = Effect_Atts[0].replaceAll("단계", "");
+								String Effect_Level_String = Effect_Atts[1].replaceAll("단계", "");
 								
 								// 지속 시간을 얻어옴
-								String Effect_Second_String = Effect_Atts[1].replaceAll("초간", "");
+								String Effect_Second_String = Effect_Atts[0].replaceAll("초간", "");
 								
 								// 발동 확률을 얻어옴
 								String Effect_Percent_String = Effect_Atts[2];
@@ -536,7 +536,7 @@ public class RIAUtil
 			case "즉시 회복": case "5":
 				return PotionEffectType.HEAL;
 				
-			case "즉시 데미지": case "6":
+			case "혈독": case "6":
 				return PotionEffectType.HARM;
 				
 			case "점프 강화": case "7":
