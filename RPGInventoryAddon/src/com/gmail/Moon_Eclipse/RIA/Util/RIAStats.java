@@ -9,6 +9,8 @@ public class RIAStats
 {
 	public static int Slot_of_Health_Gauge = 0;
 	
+	public static double Entity_Damage_Event_Coefficient = 10d;
+	
 	public static double Default_Health_Point = 0d;
 	
 	public static double Default_Walk_Speed = 0d;
@@ -50,6 +52,13 @@ public class RIAStats
 	public static String Regeneration_Health_Name = "";
 	
 	public static String Attack_Speed_Name = "";
+	
+	public static String Level_Limit_String = "최소 요구 레벨";
+	
+	public static String Level_Not_Enough_String_Prefix = "§c레벨이 낮아서 §f[";
+	
+	public static String Level_Not_Enough_String_Suffix = "§f]§c을(를) 장착할 수 없습니다.";
+
 	
 	public static void initialize_PotionEffect_Names()
 	{

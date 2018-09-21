@@ -216,6 +216,9 @@ public class RIAUtil
 		// 손에 들고있는 아이템을 얻어와서 저장
 		ItemStack HandItem = player.getInventory().getItem(New_Slot);
 		
+		// 플레이어 레벨을 저장
+		int Level = player.getLevel();
+		
 		// 아이템이 없는경우 아이템을 빈 아이템으로 지정
 		if(HandItem == null || HandItem.equals(Material.AIR))
 		{
@@ -266,8 +269,8 @@ public class RIAUtil
 			}
 		}
 		
-		// 주 무기가 무기일 경우만 추가
-		if(IsThisWeapon(HandItem))
+		// 주 무기가 무기일 경우만 추가 더해서 레벨이 충분할 경우에만 추가
+		if(IsThisWeapon(HandItem) && CanEquipIt(HandItem, Level))
 		{
 			re.add(HandItem);
 		}		
@@ -610,5 +613,62 @@ public class RIAUtil
 		}	
 		return PotionEffectType.SPEED;
 	}
-	
+	public static boolean CanEquipIt(ItemStack Cursor_Item, int Level)
+	{
+		
+		// 만약 마우스 커서에 아이템이 있다면
+		if(!(Cursor_Item == null || Cursor_Item.getType().equals(Material.AIR)))
+		{
+			// 만약 아이템이 아이템 메타를 갖는다면
+			if(Cursor_Item.hasItemMeta())
+			{
+				// 메타를받아와 저장
+				ItemMeta Cursor_Item_Meta = Cursor_Item.getItemMeta();
+				
+				// 메타가 로어를 갖는다면
+				if(Cursor_Item_Meta.hasLore())
+				{
+					// 로어를 받아와 저장
+					List<String> Lore_List = Cursor_Item_Meta.getLore();
+					
+					// 로어를 각각 불러오면서 반복
+					for(String Lore : Lore_List)
+					{
+						// 컬러 코드를 제거함
+						Lore = ChatColor.stripColor(Lore);
+						
+						// 만약 아이템이 레벨 제한을 갖는다면
+						if(Lore.contains(RIAStats.Level_Limit_String))
+						{
+							// 문자열 조정을 위한 키를 생성
+							String Remove_key = RIAStats.Level_Limit_String + " ";
+							
+							// 키에 해당하는 부분을 공백으로 변경
+							String Level_String = Lore.replaceAll(Remove_key, "");
+							
+							// 남은 숫자 부분을 정수로 변환
+							int Level_Limit = Integer.parseInt(Level_String);
+							
+							// 만약 플레이어 레벨이 낮다면
+							if(Level < Level_Limit)
+							{
+								if(IsThisWeapon(Cursor_Item))
+								{
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// 해당 되는 사항이 없으므로 true를 리턴
+		return true;
+	}
+	public static double getPercented_PlayerMaxHealth(double Max_Health, double percent)
+	{
+		// 8% = 0.08  11.2% = 0.112
+		return Max_Health * (percent / 100);
+	}
 }

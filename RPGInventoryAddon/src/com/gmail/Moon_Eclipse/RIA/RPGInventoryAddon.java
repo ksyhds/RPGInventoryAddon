@@ -48,6 +48,7 @@ public class RPGInventoryAddon extends JavaPlugin
 		AddEvent(new SkillDamage());
 		AddEvent(new EntityDamage());
 		AddEvent(new InventoryClick());
+		AddEvent(new EntityPickupItem());
 		
 		// 커맨드 클래스를 설정
 		getCommand("RIA").setExecutor(new Commands(this));
