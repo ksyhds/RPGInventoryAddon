@@ -97,8 +97,8 @@ public class EntityDamageByEntity implements Listener
 		// 만약 전투에 사람이 포함되어 있다면
 		if(damager instanceof Player || target instanceof Player)
 		{
-			// 만약 손에 철 곡괭이를 들고있고, 일반 좌클릭으로 공격한 경우라면
-			if(((LivingEntity)damager).getEquipment().getItemInMainHand().getType().equals(Material.IRON_PICKAXE) && event.getCause().equals(DamageCause.ENTITY_ATTACK))
+			// 만약 손에 철 곡괭이 혹은 철 괭이를 들고 있다면
+			if(((LivingEntity)damager).getEquipment().getItemInMainHand().getType().equals(Material.IRON_PICKAXE) || ((LivingEntity)damager).getEquipment().getItemInMainHand().getType().equals(Material.IRON_HOE))
 			{
 				//이 이벤트의 데미지를 0으로 설정함
 				event.setDamage(0d);

@@ -21,6 +21,7 @@ import com.gmail.Moon_Eclipse.RIA.RIA_Player.WrapperManager;
 import com.Moon_eclipse.EclipseLib.LibMain;
 
 import ru.endlesscode.rpginventory.api.*;
+import ru.endlesscode.rpginventory.event.PlayerInventoryLoadEvent;
 
 
 public class RIAUtil

@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -189,6 +191,13 @@ public class RIAPlayer
 	public void setCooldownTime(double CoolTime_Second)
 	{
 		Time_Stamp = new Timestamp(RIAUtil.getCooledTime(CoolTime_Second));
+		
+		// 쿨타임을 틱으로계산
+		int CoolTime_Tick =  (int)(CoolTime_Second * 20);
+		
+		Material ItemInHand = MineCraftPlayer.getEquipment().getItemInMainHand().getType();
+		
+		MineCraftPlayer.setCooldown(ItemInHand, CoolTime_Tick);
 	}
 	public void ApplySLOW_DIGGINGByValue(double value)
 	{
